@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="小优工作台">
+<meta name="theme-color" content="#FF8C5A">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>小优工作台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#FF8C5A;--primary-light:#FFF1EA;--primary-dark:#F2723F;
+  --sidebar-bg:#3A2A33;--sidebar-text:#E8DDE2;--sidebar-hover:#503A45;--sidebar-active:#FF8C5A;
+  --bg:#FFF8F3;--card-bg:#FFFFFF;--text:#3A2E2E;--text-sec:#9A8780;
+  --border:#F1E2DB;--success:#5BB98C;--warning:#F5A623;--danger:#EF6E6E;--info:#5AA9E6;
+  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 6px rgba(0,0,0,.07);
+  --transition:.2s ease;
+}
+html,body{height:100%;overscroll-behavior-y:contain}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;display:flex;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,textarea,select{font-family:inherit;font-size:14px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+
+/* Mobile top bar */
+.mobile-bar{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--sidebar-bg);color:#fff;z-index:200;align-items:center;padding:0 16px;gap:12px}
+.mobile-bar .menu-btn{font-size:22px;color:#fff;padding:4px}
+.mobile-bar .title{font-size:17px;font-weight:600;flex:1}
+
+/* Sidebar */
+.sidebar{width:240px;background:var(--sidebar-bg);color:var(--sidebar-text);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:150;padding:20px 0;transition:transform .3s ease;overflow-y:auto}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px}
+.sidebar-logo h1{font-size:19px;font-weight:700;color:#fff}
+.sidebar-logo span{font-size:11px;color:var(--sidebar-text)}
+.nav-group-title{font-size:10px;color:#64748B;text-transform:uppercase;letter-spacing:1px;padding:12px 20px 4px;font-weight:600}
+.sidebar-nav{flex:1;padding:0 12px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:8px;cursor:pointer;transition:var(--transition);font-size:14px;margin-bottom:2px}
+.nav-item:hover{background:var(--sidebar-hover);color:#fff}
+.nav-item.active{background:var(--sidebar-active);color:#fff;font-weight:500}
+.nav-item .icon{font-size:17px;width:22px;text-align:center}
+.nav-item .badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:140}
+
+/* Content */
+.content{flex:1;margin-left:240px;padding:24px;min-height:100vh;max-width:100%;transition:margin .3s ease}
+.page-header{margin-bottom:20px}
+.page-header h2{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px}
+.page-header p{font-size:13px;color:var(--text-sec);margin-top:4px}
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Card */
+.card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* Form */
+.input,textarea.input,select.input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;transition:var(--transition);background:#fff;color:var(--text)}
+.input:focus,textarea.input:focus,select.input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+textarea.input{resize:vertical;min-height:70px;line-height:1.5}
+.input-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.input-row .input{flex:1;min-width:120px}
+label.fl{font-size:12px;color:var(--text-sec);font-weight:600;margin-bottom:4px;display:block}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:14px;font-weight:500;transition:var(--transition);white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-ghost{background:transparent;color:var(--text-sec)}
+.btn-ghost:hover{background:#F1F5F9;color:var(--text)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
+.btn-outline{border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Tag */
+.tag{display:inline-block;background:var(--primary-light);color:var(--primary);font-size:11px;padding:2px 8px;border-radius:6px;margin:2px}
+.tag-success{background:#D1FAE5;color:#065F46}
+.tag-warning{background:#FEF3C7;color:#92400E}
+.tag-danger{background:#FEE2E2;color:#991B1B}
+.tag-info{background:#DBEAFE;color:#1E40AF}
+
+/* Task list (plans) */
+.task-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;transition:var(--transition)}
+.task-item:hover{box-shadow:var(--shadow-md)}
+.task-item.done{opacity:.55}
+.task-item.done .task-text{text-decoration:line-through;color:var(--text-sec)}
+.task-checkbox{width:22px;height:22px;border:2px solid var(--border);border-radius:6px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);margin-top:1px}
+.task-checkbox.checked{background:var(--success);border-color:var(--success);color:#fff}
+.task-checkbox.checked::after{content:"✓";font-size:14px;font-weight:700}
+.task-text{flex:1;font-size:14px;word-break:break-word}
+.task-priority{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.prio-high{background:var(--danger)}
+.prio-medium{background:var(--warning)}
+.prio-low{background:var(--success)}
+.task-del{color:#CBD5E1;font-size:16px;padding:2px 4px;flex-shrink:0}
+.task-del:hover{color:var(--danger)}
+
+/* Date divider */
+.date-divider{font-size:12px;color:var(--text-sec);font-weight:600;margin:16px 0 8px;padding:4px 0;border-bottom:1px solid var(--border)}
+
+/* Inspiration card */
+.insp-card{background:#fff;border-left:4px solid var(--primary);border-radius:8px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.insp-card.developing{border-left-color:var(--warning)}
+.insp-card.used{border-left-color:var(--success)}
+.insp-text{font-size:14px;margin-bottom:6px;word-break:break-word}
+.insp-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.insp-tag{font-size:11px;background:#F1F5F9;padding:2px 8px;border-radius:6px;color:var(--text-sec)}
+
+/* Hotspot */
+.hs-card{background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.hs-card.recreate{border-color:var(--success);border-width:2px}
+.hs-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.hs-title{font-size:14px;font-weight:500;flex:1;word-break:break-word}
+.hs-meta{font-size:12px;color:var(--text-sec);display:flex;gap:12px;flex-wrap:wrap}
+
+/* Review */
+.rv-card{background:#fff;border-radius:10px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.rv-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.rv-title{font-size:15px;font-weight:600}
+.rv-metrics{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0;padding:10px;background:#F8FAFC;border-radius:8px;font-size:13px}
+.rv-metric{text-align:center}
+.rv-metric .num{font-size:17px;font-weight:700;color:var(--primary)}
+.rv-metric .lbl{font-size:11px;color:var(--text-sec)}
+.rv-section{font-size:13px;margin:6px 0}
+.rv-section .lbl{font-weight:600;font-size:12px}
+.rv-pros{color:#065F46}
+.rv-cons{color:#991B1B}
+.rv-opt{color:var(--primary)}
+
+/* English quiz */
+.quiz-box{background:#fff;border-radius:12px;padding:24px;box-shadow:var(--shadow-md);margin-bottom:16px}
+.quiz-q{font-size:17px;font-weight:600;margin-bottom:16px}
+.quiz-opt{display:block;width:100%;text-align:left;padding:14px 16px;border:2px solid var(--border);border-radius:10px;margin-bottom:10px;font-size:15px;transition:var(--transition);background:#fff}
+.quiz-opt:hover{border-color:var(--primary);background:var(--primary-light)}
+.quiz-opt.correct{border-color:var(--success);background:#D1FAE5;color:#065F46}
+.quiz-opt.wrong{border-color:var(--danger);background:#FEE2E2;color:#991B1B}
+.quiz-progress{display:flex;gap:6px;margin-bottom:16px}
+.quiz-dot{width:28px;height:6px;border-radius:3px;background:var(--border)}
+.quiz-dot.done{background:var(--success)}
+.quiz-dot.current{background:var(--primary)}
+.level-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:12px}
+
+/* Read aloud */
+.read-sentence{background:var(--primary-light);border-radius:10px;padding:16px;margin-bottom:12px;text-align:center}
+.read-sentence .en{font-size:18px;font-weight:600;color:var(--primary);margin-bottom:4px}
+.read-sentence .cn{font-size:13px;color:var(--text-sec)}
+.read-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+
+/* Audio player */
+.audio-player{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--shadow-md);margin-bottom:16px}
+.audio-player.playing{border:2px solid var(--primary)}
+.audio-title{font-size:16px;font-weight:600;margin-bottom:4px}
+.audio-cat{font-size:12px;color:var(--text-sec);margin-bottom:12px}
+.audio-text{font-size:14px;line-height:1.8;color:var(--text);max-height:200px;overflow-y:auto;background:#F8FAFC;padding:14px;border-radius:8px;margin-bottom:14px}
+.audio-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.audio-btn{width:48px;height:48px;border-radius:50%;background:var(--primary);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.audio-btn:hover{background:var(--primary-dark)}
+.speed-control{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-sec)}
+.speed-control input{width:80px}
+
+/* Memo */
+.memo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.memo-note{padding:16px;border-radius:10px;font-size:14px;min-height:100px;position:relative;box-shadow:var(--shadow);word-break:break-word;white-space:pre-wrap}
+.memo-del{position:absolute;top:6px;right:6px;color:rgba(0,0,0,.3);font-size:16px;padding:4px}
+.memo-del:hover{color:var(--danger)}
+.memo-date{font-size:10px;opacity:.6;margin-top:8px}
+
+/* Kanban */
+.kanban-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.kanban-column{min-width:200px;flex:1;background:#F8FAFC;border-radius:10px;padding:12px;min-height:200px}
+.kanban-col-head{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.kanban-col-head .count{background:var(--border);color:var(--text-sec);font-size:11px;padding:1px 7px;border-radius:10px}
+.kanban-card{background:#fff;border-radius:8px;padding:10px;margin-bottom:8px;cursor:grab;box-shadow:var(--shadow);border-left:3px solid var(--border)}
+.kanban-card.priority-high{border-left-color:var(--danger)}
+.kanban-card.priority-medium{border-left-color:var(--warning)}
+.kanban-card.priority-low{border-left-color:var(--success)}
+.kanban-card:active{cursor:grabbing}
+.kanban-card-title{font-size:13px;font-weight:500;margin-bottom:4px}
+.kanban-card-meta{font-size:11px;color:var(--text-sec);display:flex;gap:6px;flex-wrap:wrap}
+.kanban-card-actions{margin-top:6px;display:flex;gap:4px;align-items:center}
+.kanban-card-edit-btn{position:absolute;top:6px;right:6px;opacity:0;transition:opacity .2s;background:rgba(255,255,255,.9);border:none;border-radius:4px;padding:2px 5px;font-size:12px;cursor:pointer;color:var(--text-sec)}
+.kanban-card{position:relative}
+.kanban-card:hover .kanban-card-edit-btn{opacity:1}
+.kanban-card-edit-btn:hover{background:var(--primary);color:#fff}
+.kanban-add-btn{width:100%;padding:8px;border:1px dashed var(--border);border-radius:8px;background:transparent;color:var(--text-sec);font-size:12px;cursor:pointer;transition:all .2s;margin-top:4px}
+.kanban-add-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg)}
+.kanban-edit-field{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;margin-bottom:8px;box-sizing:border-box}
+.kanban-edit-field:focus{outline:none;border-color:var(--primary)}
+
+/* Thought organizer */
+.prompt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px}
+.prompt-btn{padding:12px;text-align:center;border:1.5px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;transition:var(--transition);background:#fff}
+.prompt-btn:hover{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+
+/* Info list */
+.info-item{background:#fff;border-radius:8px;padding:12px;margin-bottom:8px;box-shadow:var(--shadow);border-left:3px solid var(--primary)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;padding:10px 20px;border-radius:24px;font-size:14px;z-index:9999;transition:transform .3s ease;box-shadow:var(--shadow-md);max-width:90%}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--text-sec);font-size:14px}
+.empty .icon{font-size:40px;display:block;margin-bottom:8px;opacity:.4}
+
+/* Filter chips */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--text-sec);transition:var(--transition)}
+.chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* Stat row */
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.stat-box{flex:1;min-width:100px;background:#fff;border-radius:10px;padding:14px;box-shadow:var(--shadow);text-align:center}
+.stat-box .num{font-size:24px;font-weight:700;color:var(--primary)}
+.stat-box .lbl{font-size:11px;color:var(--text-sec)}
+
+/* Responsive */
+@media(max-width:768px){
+  body{flex-direction:column}
+  .mobile-bar{display:flex}
+  .sidebar{transform:translateX(-100%);width:260px;padding-top:56px}
+  .sidebar.open{transform:translateX(0)}
+  .overlay.show{display:block}
+  .content{margin-left:0;padding:16px;padding-top:72px}
+  .kanban-board{flex-direction:column}
+  .kanban-column{min-width:auto}
+  .memo-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .prompt-grid{grid-template-columns:repeat(2,1fr)}
+  .page-header h2{font-size:18px}
+  .stat-row{gap:8px}
+  .stat-box .num{font-size:20px}
+}
+@media(max-width:400px){
+  .memo-grid{grid-template-columns:1fr 1fr}
+}
+/* 云同步状态条 */
+.sidebar-sync{display:flex;align-items:center;gap:8px;padding:12px 20px;border-top:1px solid #334155;cursor:pointer;color:var(--sidebar-text);font-size:13px;transition:background .2s;flex-wrap:wrap}
+.sidebar-sync:hover{background:var(--sidebar-hover)}
+.sidebar-sync #cloud-status{font-size:11px;padding:1px 6px;border-radius:8px;background:#334155}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.sync-gear{margin-left:auto;opacity:.5;font-size:14px}
+/* 弹窗 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-card{background:var(--card-bg);border-radius:var(--radius);padding:24px;max-width:380px;width:100%;box-shadow:var(--shadow-md)}
+.modal-card h3{font-size:18px;margin-bottom:12px}
+.modal-desc{font-size:13px;color:var(--text-sec);margin-bottom:16px;line-height:1.5}
+.modal-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.modal-actions .btn{flex:1;min-width:80px}
+.modal-hint{font-size:12px;color:var(--text-sec);margin-top:12px;min-height:16px}
+.cloud-section{margin-bottom:16px}
+.cloud-header{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6366F1;padding:8px 0;border-bottom:2px solid #E0E7FF;margin-bottom:8px}
+.cloud-badge{font-size:11px;background:#6366F1;color:#fff;padding:2px 8px;border-radius:10px;font-weight:400}
+.cloud-card{border-left:3px solid #818CF8!important;background:#F5F3FF!important}
+.tag-cloud{background:#E0E7FF!important;color:#4338CA!important}
+.rec-day{border:1px solid #E5E7EB;border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff}
+.rec-date{font-size:14px;font-weight:700;color:#1E293B;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.rec-block{margin:8px 0}
+.rec-label{font-size:12px;font-weight:600;color:#64748B;margin-bottom:6px}
+.rec-items{display:flex;flex-wrap:wrap;gap:6px}
+.rec-chip{font-size:12px;background:#FFF1F2;color:#BE123C;padding:3px 9px;border-radius:8px;border:1px solid #FECDD3;line-height:1.6}
+.rec-chip-feeds{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}
+.rec-review{background:#F8FAFC;border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.rec-review-title{font-size:13px;font-weight:600;color:#334155}
+.rec-review-sum{font-size:12px;color:#64748B;line-height:1.6;margin-top:3px;white-space:pre-wrap}
+.rec-missing{font-size:12px;color:#B45309;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:8px 10px}
+</style>
+<script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
+<script>
+(function(){
+  try{
+    var beacon=new BeaconAction({
+      appkey:'0WEB06U85YBSLJNL',
+      versionCode:'1.0.0',
+      channelID:'share',
+      delay:1000,
+      sessionDuration:30*60*1000,
+      isOversea:false,
+      needReportRqdEvent:false
+    });
+    beacon.onDirectUserAction('preview_page_view',{
+      'url':location.href,
+      'referrer':document.referrer,
+      'title':document.title,
+      'sandbox_id':'c9b01a97531f4571a68dcbf43187f4c5'
+    });
+  }catch(e){}
+})();
+</script></head>
+<body>
+
+<!-- Mobile bar -->
+<div class="mobile-bar">
+  <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+  <span class="title" id="mobile-title">小优工作台</span>
+</div>
+
+<!-- Sidebar -->
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>🐾 小优工作台</h1>
+    <span>🐾 小优的宠物效率面板</span>
+  </div>
+  <div class="sidebar-nav" id="nav-container"></div>
+  <div class="sidebar-sync" onclick="openSyncModal()">
+    <span id="cloud-status">📱 本地</span>
+    <span>📦 数据管理</span>
+    <span class="sync-gear">⚙️</span>
+    <span style="font-size:10px;color:#64748B;width:100%;margin-top:4px" id="app-version">v2.5</span>
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="content" id="content">
+
+  <!-- 1. Daily Plan -->
+  <section class="view" id="view-plan">
+    <div class="page-header">
+      <h2>📋 每日计划</h2>
+      <p>今天的任务，打勾完成，随时新增和删除</p>
+    </div>
+    <div class="card">
+      <div class="input-row" style="align-items:flex-end">
+        <div style="flex:1;min-width:160px">
+          <label class="fl">新增任务</label>
+          <input class="input" id="plan-input" placeholder="今天要做什么？" onkeydown="if(event.key==='Enter'&&event.ctrlKey)addPlan()">
+        </div>
+        <div>
+          <label class="fl">优先级</label>
+          <select class="input" id="plan-prio" style="width:auto">
+            <option value="high">🔴 高</option>
+            <option value="medium" selected>🟡 中</option>
+            <option value="low">🟢 低</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="addPlan()">+ 添加</button>
+      </div>
+    </div>
+    <div id="plan-stats"></div>
+    <div id="plan-list"></div>
+  </section>
+
+  <!-- 2. Inspiration -->
+  <section class="view" id="view-inspiration">
+    <div class="page-header">
+      <h2>💡 选题灵感</h2>
+      <p>随时记录创作灵感，标记状态</p>
+    </div>
+    <div class="card">
+      <label class="fl">记录灵感</label>
+      <textarea class="input" id="insp-input" placeholder="突然想到的选题方向、内容点子、有趣发现..." onkeydown="if(event.key==='Enter'&&event.ctrlKey)addInspiration()"></textarea>
+      <div class="input-row" style="margin-top:8px">
+        <input class="input" id="insp-tag" placeholder="标签（如：对比评测、学生向）" style="flex:1">
+        <button class="btn btn-primary" onclick="addInspiration()">+ 记录</button>
+      </div>
+    </div>
+    <div class="chips" id="insp-filter"></div>
+    <div id="insp-list"></div>
+  </section>
+
+  <!-- 3. Hotspot -->
+  <section class="view" id="view-hotspot">
+    <div class="page-header">
+      <h2>🔥 宠物爆款热点</h2>
+      <p>追踪抖音、小红书、公众号宠物热门，标注适合二创的 · 每天早 9 点自动更新</p>
+    </div>
+    <div class="card">
+      <div class="input-row">
+        <div style="flex:1;min-width:120px">
+          <label class="fl">平台</label>
+          <select class="input" id="hs-platform">
+            <option value="douyin">抖音</option>
+            <option value="xhs">小红书</option>
+            <option value="wechat">公众号</option>
+          </select>
+        </div>
+        <div style="flex:2;min-width:160px">
+          <label class="fl">热点标题</label>
+          <input class="input" id="hs-title" placeholder="热点标题或话题">
+        </div>
+      </div>
+      <div class="input-row">
+        <div style="flex:1">
+          <label class="fl">热度数据</label>
+          <input class="input" id="hs-heat" placeholder="如：580w播放 / 10w点赞">
+        </div>
+        <div style="flex:1">
+          <label class="fl">链接（可选）</label>
+          <input class="input" id="hs-url" placeholder="https://...">
+        </div>
+      </div>
+      <div class="input-row" style="align-items:center">
+        <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer">
+          <input type="checkbox" id="hs-recreate" style="width:18px;height:18px"> 适合二创
+        </label>
+        <input class="input" id="hs-note" placeholder="二创建议/备注（可选）" style="flex:1">
+        <button class="btn btn-primary" onclick="addHotspot()">+ 添加</button>
+      </div>
+    </div>
+    <div class="chips" id="hs-filter">
+      <div class="chip active" data-f="all">全部</div>
+      <div class="chip" data-f="douyin">抖音</div>
+      <div class="chip" data-f="xhs">小红书</div>
+      <div class="chip" data-f="wechat">公众号</div>
+      <div class="chip" data-f="recreate">⭐ 适合二创</div>
+    </div>
+    <div id="hs-list"></div>
+  </section>
+
+  <!-- 4. Review -->
+  <section class="view" id="view-review">
+    <div class="page-header">
+      <h2>📊 内容复盘</h2>
+      <p>记录每天发布内容的优缺点和优化方向 · 每天早 9 点自动更新</p>
+    </div>
+    <div class="card">
+      <div class="input-row">
+        <div style="flex:1;min-width:140px">
+          <label class="fl">内容标题</label>
+          <input class="input" id="rv-title" placeholder="发布的内容标题">
+        </div>
+        <div>
+          <label class="fl">平台</label>
+          <select class="input" id="rv-platform" style="width:auto">
+            <option value="xhs">小红书</option>
+            <option value="douyin">抖音</option>
+            <option value="wechat">公众号</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+      </div>
+      <div class="input-row">
+        <div><label class="fl">播放/阅读</label><input class="input" id="rv-views" type="number" style="width:90px" placeholder="0"></div>
+        <div><label class="fl">点赞</label><input class="input" id="rv-likes" type="number" style="width:90px" placeholder="0"></div>
+        <div><label class="fl">收藏</label><input class="input" id="rv-saves" type="number" style="width:90px" placeholder="0"></div>
+        <div><label class="fl">评论</label><input class="input" id="rv-comments" type="number" style="width:90px" placeholder="0"></div>
+      </div>
+      <label class="fl">优点（做得好的）</label>
+      <textarea class="input" id="rv-pros" placeholder="哪些方面表现好？数据亮点？用户反馈？" style="margin-bottom:10px"></textarea>
+      <label class="fl">缺点（不足之处）</label>
+      <textarea class="input" id="rv-cons" placeholder="哪里可以改进？数据不如预期的地方？" style="margin-bottom:10px"></textarea>
+      <label class="fl">优化方向</label>
+      <textarea class="input" id="rv-opt" placeholder="下次怎么优化？" style="margin-bottom:10px"></textarea>
+      <button class="btn btn-primary" onclick="addReview()">+ 保存复盘</button>
+    </div>
+    <div id="rv-list"></div>
+  </section>
+
+  <!-- 7. Memo -->
+  <section class="view" id="view-memo">
+    <div class="page-header">
+      <h2>📝 备忘录</h2>
+      <p>随手记东西，方便随时查看</p>
+    </div>
+    <div class="card">
+      <textarea class="input" id="memo-input" placeholder="随手记点什么..." style="min-height:60px;margin-bottom:10px"></textarea>
+      <div class="input-row" style="align-items:center">
+        <div style="display:flex;gap:6px" id="memo-colors"></div>
+        <button class="btn btn-primary" onclick="addMemo()" style="margin-left:auto">+ 记下</button>
+      </div>
+    </div>
+    <div class="memo-grid" id="memo-list"></div>
+  </section>
+
+  <!-- 8. Info Collect (original) -->
+  <section class="view" id="view-collect">
+    <div class="page-header">
+      <h2>🐾 宠物资讯收集箱</h2>
+      <p>快速录入日常看到的宠物资讯 · 每天早 9 点自动更新 5 条</p>
+    </div>
+    <div class="card">
+      <div class="input-row">
+        <div style="flex:2;min-width:140px">
+          <label class="fl">标题</label>
+          <input class="input" id="info-title" placeholder="资讯标题" onkeydown="if(event.key==='Enter'&&event.ctrlKey)addInfo()">
+        </div>
+        <div style="flex:1">
+          <label class="fl">来源</label>
+          <input class="input" id="info-source" placeholder="如：36氪">
+        </div>
+      </div>
+      <div class="input-row">
+        <div style="flex:1">
+          <label class="fl">链接（可选）</label>
+          <input class="input" id="info-url" placeholder="https://...">
+        </div>
+        <div style="flex:1">
+          <label class="fl">标签（逗号分隔）</label>
+          <input class="input" id="info-tags" placeholder="竞品,行业,热点">
+        </div>
+      </div>
+      <label class="fl">一句话摘要</label>
+      <input class="input" id="info-notes" placeholder="核心信息提炼" style="margin-bottom:10px">
+      <button class="btn btn-primary" onclick="addInfo()">+ 收录到资讯池</button>
+    </div>
+    <div class="input-row" style="margin-bottom:12px">
+      <input class="input" id="info-search" placeholder="🔍 搜索资讯..." style="flex:1" oninput="renderInfoList()">
+    </div>
+    <div id="info-list"></div>
+  </section>
+
+  <!-- 9. Kanban (original) -->
+  <section class="view" id="view-kanban">
+    <div class="page-header">
+      <h2>📋 选题看板</h2>
+      <p>拖拽推进进度 · 点击 ✏️ 编辑 · 每列可新建选题</p>
+    </div>
+    <div class="kanban-board" id="kanban-board"></div>
+  </section>
+
+  <!-- 10. Thought (original) -->
+  <section class="view" id="view-think">
+    <div class="page-header">
+      <h2>🧠 思路梳理器</h2>
+      <p>没有头绪时，用引导问题帮自己理清</p>
+    </div>
+    <div class="prompt-grid" id="prompt-grid"></div>
+    <div class="card">
+      <textarea class="input" id="thought-pad" placeholder="在这里自由书写...点击上方引导问题可以快速插入模板" style="min-height:300px;font-size:14px;line-height:1.8"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-primary" onclick="saveThought()">💾 保存记录</button>
+        <button class="btn btn-outline" onclick="document.getElementById('thought-pad').value=''">清空</button>
+      </div>
+    </div>
+    <div id="thought-history"></div>
+  </section>
+
+  <!-- 11. Legal (宠物法规) -->
+  <section class="view" id="view-law">
+    <div class="page-header">
+      <h2>⚖️ 法律条文</h2>
+      <p>每日早 9 点自动更新 · 养犬管理 / 动物防疫 / 民法典·宠物 各 1 条（共 3 条）</p>
+    </div>
+    <div class="chips" id="law-tabs">
+      <div class="chip active" data-cat="all" onclick="switchLaw('all')">📚 全部</div>
+      <div class="chip" data-cat="dog" onclick="switchLaw('dog')">🐕 养犬管理</div>
+      <div class="chip" data-cat="vaccine" onclick="switchLaw('vaccine')">🩺 动物防疫</div>
+      <div class="chip" data-cat="civil" onclick="switchLaw('civil')">📜 民法典·宠物</div>
+    </div>
+    <div id="law-list"></div>
+  </section>
+
+</main>
+
+<div class="modal-overlay" id="sync-modal">
+  <div class="modal-card">
+    <h3>📦 数据管理 <span id="modal-version" style="font-size:11px;color:#94A3B8;font-weight:normal"></span></h3>
+    <div id="version-banner" style="background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px;margin:8px 0;font-size:12px;color:#92400E">⚠️ <b>请先确认版本号是 v2.5</b><br>如果不是，电脑请按 <b>Ctrl+Shift+R</b>，手机请清缓存重新打开</div>
+    <p class="modal-desc">云端自动同步：所有设备共享同一通道，无需复制链接。</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="manualSync()" style="font-size:15px;padding:12px">⚡ 一键同步（上传+拉取）</button>
+      <button class="btn btn-outline" onclick="cloudSave().then(()=>toast('☁️ 已上传'))">☁️ 仅上传</button>
+      <button class="btn btn-outline" onclick="forceCloudLoad()">⬇️ 仅拉取</button>
+      <button class="btn btn-outline" onclick="copyCloudLink()">🔗 复制同步链接</button>
+      <button class="btn btn-outline" onclick="exportData()">⬇️ 导出 JSON 备份</button>
+      <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ 导入 JSON 备份</button>
+      <button class="btn btn-outline" onclick="showInstallGuide()">📱 安装为手机 App</button>
+      <button class="btn btn-outline" onclick="closeSyncModal()">关闭</button>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    <p class="modal-hint" id="sync-debug" style="font-size:11px;color:#94A3B8;margin-top:10px"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="install-guide-modal">
+  <div class="modal-card">
+    <h3>📱 安装到手机主屏幕</h3>
+    <p class="modal-desc">把工作台变成"App"：从主屏幕图标打开，全屏显示，永久可用。</p>
+    <div style="text-align:left;font-size:13px;line-height:1.8;background:var(--bg-soft);padding:14px;border-radius:8px;margin:10px 0;color:var(--text-primary)">
+      <b>🍎 iPhone (Safari)：</b><br>
+      1. 用 Safari 打开当前链接<br>
+      2. 点底部的「分享」按钮 ⬆️<br>
+      3. 选择「添加到主屏幕」<br>
+      4. 名称改为「小优」，点「添加」<br><br>
+      <b>🤖 Android (Chrome)：</b><br>
+      1. 用 Chrome 打开当前链接<br>
+      2. 点右上角菜单 ⋮<br>
+      3. 选择「添加到主屏幕」或「安装应用」<br>
+      4. 名称「小优」，点「添加」<br><br>
+      <b>💡 安装后：</b><br>
+      · 主屏幕会出现 小优 图标<br>
+      · 点击打开是全屏 App 体验<br>
+      · 数据通过云端自动同步<br>
+      · 想换设备时数据会跟着走
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeInstallGuide()">我知道了</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="kanban-edit-modal">
+  <div class="modal-card" style="max-width:460px">
+    <h3 id="kanban-edit-title">✏️ 编辑选题</h3>
+    <input type="hidden" id="kanban-edit-id">
+    <input class="kanban-edit-field" id="kanban-edit-name" placeholder="选题标题" style="font-weight:600">
+    <input class="kanban-edit-field" id="kanban-edit-source" placeholder="来源（可选）">
+    <input class="kanban-edit-field" id="kanban-edit-url" placeholder="链接 URL（可选）">
+    <input class="kanban-edit-field" id="kanban-edit-tags" placeholder="标签，逗号分隔（可选）">
+    <textarea class="kanban-edit-field" id="kanban-edit-notes" placeholder="备注（可选）" rows="3" style="resize:vertical"></textarea>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <span style="font-size:12px;color:var(--text-sec)">优先级：</span>
+      <select id="kanban-edit-priority" class="kanban-edit-field" style="width:auto;margin-bottom:0">
+        <option value="high">🔴 高</option>
+        <option value="medium">🟡 中</option>
+        <option value="low">🟢 低</option>
+      </select>
+      <span style="font-size:12px;color:var(--text-sec);margin-left:8px">状态：</span>
+      <select id="kanban-edit-status" class="kanban-edit-field" style="width:auto;margin-bottom:0">
+        <option value="pool">资讯池</option>
+        <option value="evaluate">待评估</option>
+        <option value="candidate">选题候选</option>
+        <option value="progress">进行中</option>
+        <option value="done">已发布</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveKanbanEdit()">💾 保存</button>
+      <button class="btn btn-outline" onclick="delKanbanCard(document.getElementById('kanban-edit-id').value)" id="kanban-edit-del" style="color:var(--danger);display:none">🗑️ 删除</button>
+      <button class="btn btn-outline" onclick="closeKanbanEdit()">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ DATA LAYER ============
+const SK={
+  infos:'aria_infos',thoughts:'aria_thoughts',plans:'aria_plans',
+  inspirations:'aria_inspirations',hotspots:'aria_hotspots',reviews:'aria_reviews',
+  memos:'aria_memos',enProgress:'aria_en_progress'
+};
+function loadData(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}}
+function loadObj(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function saveData(k,d){localStorage.setItem(k,JSON.stringify(d));debouncedCloudSync()}
+function saveLocal(k,d){localStorage.setItem(k,JSON.stringify(d));debouncedCloudSync()}
+
+// ============ AUTO CLOUD SYNC (jsonblob.com) ============
+const CLOUD_API='https://jsonblob.com/api/jsonBlob';
+const DEFAULT_SYNC_ID='019fca88-69a9-70ba-8a61-879b7e2ddc5f';
+const APP_VERSION='v2.9';
+let _syncId=localStorage.getItem('aria_sync_id')||DEFAULT_SYNC_ID,_syncTimer=null,_isSyncing=false,_lastCloudLoad=0,_lastLocalSave=0,_syncRetryTimer=null,_syncRetryCount=0;
+console.log('[小优] '+APP_VERSION+' sync module loaded, syncId='+_syncId);
+
+// Clean polluted localStorage from v2.3 bug (string "null" values)
+function _cleanPollutedStorage(){
+  Object.values(SK).forEach(k=>{
+    const v=localStorage.getItem(k);
+    if(v==='null'||v===null){localStorage.removeItem(k);console.log('[Aria] Cleaned polluted key: '+k)}
+  });
+}
+_cleanPollutedStorage();
+
+function _getSyncId(){return _syncId}
+function _setSyncId(id){_syncId=id;localStorage.setItem('aria_sync_id',id);}
+
+// ============ TOMBSTONE (deleted ids) so deletes propagate across devices ============
+function _getDeleted(){try{return JSON.parse(localStorage.getItem('aria_sync_deleted')||'{}')||{}}catch(e){return{}}}
+function _setDeletedMap(m){localStorage.setItem('aria_sync_deleted',JSON.stringify(m));}
+function markDeleted(key,id){
+  const m=_getDeleted();
+  if(!m[key])m[key]=[];
+  if(id&&!m[key].includes(id))m[key].push(id);
+  _setDeletedMap(m);
+  debouncedCloudSync();
+}
+function _unionDeleted(localDel,cloudDelRaw){
+  let cloudDel={};try{cloudDel=JSON.parse(cloudDelRaw||'{}')||{}}catch(e){cloudDel={}}
+  const out={};
+  const keys=new Set([...Object.keys(localDel||{}),...Object.keys(cloudDel||{})]);
+  keys.forEach(k=>{out[k]=[...(new Set([...(localDel[k]||[]),...(cloudDel[k]||[])]))];});
+  return out;
+}
+
+// Snapshot: only include keys with real data (skip null, "null", undefined, empty)
+function _snapshot(){
+  const s={};
+  Object.values(SK).forEach(k=>{
+    const v=localStorage.getItem(k);
+    if(v!==null&&v!==undefined&&v!=='null'&&v!==''){s[k]=v}
+  });
+  s['aria_sync_deleted']=JSON.stringify(_getDeleted());
+  s.__meta={ts:Date.now(),v:5};
+  return s;
+}
+
+// Merge two array JSON strings by id (union, no dup). preferLocal: local wins on id conflict.
+function _mergeArr(localRaw, cloudRaw, preferLocal){
+  let localArr=[],cloudArr=[];
+  try{localArr=JSON.parse(localRaw||'[]')}catch(e){localArr=[]}
+  try{cloudArr=JSON.parse(cloudRaw||'[]')}catch(e){cloudArr=[]}
+  if(!Array.isArray(localArr))localArr=[];
+  if(!Array.isArray(cloudArr))cloudArr=[];
+  const map=new Map();
+  if(preferLocal){
+    cloudArr.forEach(x=>{if(x&&x.id)map.set(x.id,x)});
+    localArr.forEach(x=>{if(x&&x.id)map.set(x.id,x)});
+  }else{
+    localArr.forEach(x=>{if(x&&x.id)map.set(x.id,x)});
+    cloudArr.forEach(x=>{if(x&&x.id)map.set(x.id,x)});
+  }
+  return JSON.stringify([...map.values()]);
+}
+
+// Restore: MERGE by id (cloud-priority by default) — bring back missing items AND apply tombstones (deletes)
+function _restore(s){
+  const localDel=_getDeleted();
+  const mergedDel=_unionDeleted(localDel,s['aria_sync_deleted']);
+  _setDeletedMap(mergedDel);
+  Object.values(SK).forEach(k=>{
+    const v=s[k];
+    if(v!==undefined&&v!==null&&v!=='null'&&v!==''){
+      try{
+        const cloudVal=JSON.parse(v);
+        if(Array.isArray(cloudVal)){
+          const merged=_mergeArr(localStorage.getItem(k),v,false); // cloud priority: bring back what's missing locally
+          const delSet=new Set(mergedDel[k]||[]);
+          const arr=JSON.parse(merged).filter(x=>!delSet.has((x&&x.id))); // strip tombstoned items
+          localStorage.setItem(k,JSON.stringify(arr));
+        }else{
+          localStorage.setItem(k,v);
+        }
+      }catch(e){
+        localStorage.setItem(k,v);
+      }
+    }
+  });
+}
+
+function _syncStatus(t){
+  const el=document.getElementById('cloud-status');
+  if(!el)return;
+  const m={syncing:['🔄 同步中','#F59E0B'],synced:['☁️ 已同步','#10B981'],offline:['📱 离线','#64748B'],local:['📱 本地','#64748B']};
+  const[tx,c]=m[t]||m.local;
+  el.textContent=tx;el.style.color=c;
+}
+
+async function cloudSave(){
+  if(_isSyncing){console.log('[Aria Sync] Skip: already syncing');return}
+  _isSyncing=true;_syncStatus('syncing');
+  _lastLocalSave=Date.now();
+  try{
+    const data=_snapshot();
+    // Pre-merge: pull cloud first and union by id (local priority) so we never overwrite other devices' additions
+    let cloudDeletedRaw=null;
+    try{
+      const r0=await fetch(CLOUD_API+'/'+_syncId);
+      if(r0.ok){
+        const d=await r0.json();
+        if(d&&d.__meta!==undefined){
+          Object.values(SK).forEach(k=>{
+            const cv=d[k];
+            if(cv!==undefined&&cv!==null&&cv!=='null'&&cv!==''){
+              try{
+                const cloudVal=JSON.parse(cv);
+                if(Array.isArray(cloudVal)) data[k]=_mergeArr(data[k],cv,true);
+              }catch(e){}
+            }
+          });
+          cloudDeletedRaw=d['aria_sync_deleted']||null;
+        }
+      }
+    }catch(e){console.log('[Aria Sync] pre-merge failed, saving local only');}
+    // Merge tombstones and strip deleted items so a delete on one device propagates
+    const mergedDel=_unionDeleted(_getDeleted(),cloudDeletedRaw);
+    data['aria_sync_deleted']=JSON.stringify(mergedDel);
+    Object.values(SK).forEach(k=>{
+      const delSet=new Set(mergedDel[k]||[]);
+      if(delSet.size){
+        try{const arr=JSON.parse(data[k]||'[]');data[k]=JSON.stringify(arr.filter(x=>!delSet.has((x&&x.id))));}catch(e){}
+      }
+    });
+    data.__meta={ts:Date.now(),v:5};
+    const planCount=data.aria_plans?JSON.parse(data.aria_plans).length:0;
+    console.log('[Aria Sync] PUT to '+_syncId+', plans='+planCount);
+    let r=await fetch(CLOUD_API+'/'+_syncId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    console.log('[Aria Sync] PUT response: '+r.status);
+    if(r.status===404){
+      console.log('[Aria Sync] Blob 404, creating new...');
+      const r2=await fetch(CLOUD_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      const loc=r2.headers.get('Location');
+      if(loc){_setSyncId(loc.split('/').pop());console.log('[Aria Sync] Created new blob: '+_syncId)}
+    }
+    _syncStatus('synced');_syncRetryCount=0;if(_syncRetryTimer){clearTimeout(_syncRetryTimer);_syncRetryTimer=null;}
+    localStorage.setItem('aria_last_cloud_ts',data.__meta.ts);
+    console.log('[Aria Sync] Upload OK, plans='+planCount+', ts='+data.__meta.ts);
+  }catch(e){console.error('[Aria Sync] Upload failed:',e);_syncStatus('offline');if(_syncRetryCount<4){_syncRetryCount++;_syncRetryTimer=setTimeout(()=>{_syncRetryTimer=null;cloudSave();},15000);console.log('[Aria Sync] will retry in 15s ('+_syncRetryCount+'/4)');}}
+  _isSyncing=false;
+}
+
+async function cloudLoad(force){
+  // Throttle: don't auto-reload more than once every 60 seconds (unless forced)
+  if(!force&&Date.now()-_lastCloudLoad<60000)return;
+  _lastCloudLoad=Date.now();
+  _syncStatus('syncing');
+  try{
+    const r=await fetch(CLOUD_API+'/'+_syncId);
+    console.log('[Aria Sync] GET response: '+r.status);
+    if(r.ok){
+      const d=await r.json();
+      if(d&&d.__meta!==undefined){
+        const cloudTs=(d.__meta&&d.__meta.ts)||0;
+        const localTs=Number(localStorage.getItem('aria_last_cloud_ts')||0);
+        // Merge-style restore (cloud priority): bring back what's missing locally (e.g. plans added on phone),
+        // without deleting local data. Safe to run even if local was just edited.
+        _restore(d);
+        localStorage.setItem('aria_last_cloud_ts',cloudTs);
+        reloadAllData();renderNav();renderPage(currentPage);
+        _syncStatus('synced');
+        console.log('[Aria Sync] Merged from cloud, cloudTs='+cloudTs+' localTs='+localTs);
+      }else{
+        _syncStatus('local');await cloudSave();
+      }
+    }else if(r.status===404){
+      _syncStatus('local');await cloudSave();
+    }else{_syncStatus('local')}
+  }catch(e){console.error('[Aria Sync] Load failed:',e);_syncStatus('offline')}
+}
+
+function debouncedCloudSync(){
+  _lastLocalSave=Date.now();
+  if(_syncTimer)clearTimeout(_syncTimer);
+  _syncTimer=setTimeout(cloudSave,2000);
+}
+
+function forceCloudLoad(){
+  _lastCloudLoad=0;
+  toast('⬇️ 正在从云端拉取...');
+  // Force restore even if local was modified
+  cloudLoad(true).then(()=>{
+    const dbg=document.getElementById('sync-debug');
+    if(dbg)dbg.textContent='最后拉取: '+new Date().toLocaleTimeString();
+    toast('✅ 拉取完成');
+  });
+}
+function copyCloudLink(){
+  const url=location.href;
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>toast('✅ 同步链接已复制！在其他设备打开即可同步')).catch(()=>{prompt('请手动复制：',url)})}
+  else{prompt('请手动复制：',url)}
+}
+function genId(){return Date.now().toString(36)+Math.random().toString(36).substr(2,6)}
+
+// ============ CLOUD DATA (Live content channel, shared by phone + computer) ============
+const CLOUD_CACHE_MS=300000;
+let cloudCache={hotspots:null,review:null,feeds:null,law:null,records:null};
+let cloudCacheTime={hotspots:0,review:0,feeds:0,law:0,records:0};
+let _contentIds=null;
+// Resolve the live content-channel ids from deployed cloud_content_sync.json
+async function resolveContentId(type){
+  if(_contentIds&&_contentIds[type])return _contentIds[type];
+  try{
+    const r=await fetch('./cloud_content_sync.json?_='+Date.now());
+    if(r.ok){const j=await r.json();_contentIds=j;return j[type]||null;}
+  }catch(e){}
+  return null;
+}
+// Priority: live jsonblob channel (same source for every device, daily auto-updated) →
+// fallback to the static deployed file (offline / first-run seed).
+async function fetchCloud(type){
+  if(Date.now()-cloudCacheTime[type]<CLOUD_CACHE_MS&&cloudCache[type])return cloudCache[type];
+  try{
+    const cid=await resolveContentId(type);
+    if(cid){
+      const r=await fetch('https://jsonblob.com/api/jsonBlob/'+cid+'?_='+Date.now());
+      if(r.ok){
+        const d=await r.json();
+        if(d&&((d.records&&d.records.length)||d.laws)){
+          cloudCache[type]=d;cloudCacheTime[type]=Date.now();
+          return d;
+        }
+      }
+    }
+  }catch(e){console.log('[小优] content channel fetch failed, fallback to static',e);}
+  if(window.location.protocol!=='https:')return null;
+  try{
+    const r=await fetch(`${window.location.origin}/cloud_${type}.json?_=${Date.now()}`);
+    if(!r.ok)return null;
+    const d=await r.json();
+    cloudCache[type]=d;cloudCacheTime[type]=Date.now();
+    return d;
+  }catch(e){return null;}
+}
+
+// ============ LEGAL (法律条文 自动拉取) ============
+let lawCat='all';
+const LAW_TABS={dog:'🐕 养犬管理',vaccine:'🩺 动物防疫',civil:'📜 民法典·宠物'};
+function switchLaw(cat){
+  lawCat=cat;
+  document.querySelectorAll('#law-tabs .chip').forEach(c=>c.classList.toggle('active',c.dataset.cat===cat));
+  renderLaw();
+}
+async function renderLaw(){
+  const c=document.getElementById('law-list');
+  if(!c)return;
+  const today=todayStr();
+  document.querySelectorAll('#law-tabs .chip').forEach(ch=>ch.classList.toggle('active',ch.dataset.cat===lawCat));
+  try{
+    const cloud=await fetchCloud('law');
+    const recs=(cloud&&Array.isArray(cloud.records))?cloud.records:[];
+    let laws=[];
+    recs.forEach(r=>{(r.laws||[]).forEach(l=>laws.push(Object.assign({date:r.date||''},l)));});
+    if(lawCat!=='all') laws=laws.filter(l=>l.cat===lawCat);
+    if(laws.length===0){
+      c.innerHTML='<div class="empty"><span class="icon">⚖️</span>暂无法条<br><br>每天早9点自动更新3条宠物法条</div>';return;
+    }
+    const byDate={};
+    laws.forEach(l=>{const d=l.date||'未标注'; (byDate[d]=byDate[d]||[]).push(l);});
+    const dates=Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
+    let html=`<div class="cloud-section"><div class="cloud-header">🤖 每日法条 <span class="cloud-badge">按日期</span>${cloud._updated?' · 更新于 '+esc(cloud._updated):''}</div>`;
+    dates.forEach(d=>{
+      html+=`<div class="rec-day"><div class="rec-date">📅 ${esc(d)}${d===today?' <span class="tag tag-success">今天</span>':''}</div>`;
+      byDate[d].forEach(l=>{
+        html+=`<div class="hs-card cloud-card" style="margin-bottom:10px">
+          <div class="hs-top">
+            <span class="tag tag-cloud">${LAW_TABS[l.cat]||l.cat}</span>
+            ${l.article?`<span class="hs-title" style="font-weight:600">${esc(l.article)}</span>`:''}
+          </div>
+          <div style="font-size:13px;color:var(--text);margin:6px 0;line-height:1.75;white-space:pre-wrap">${esc(l.content)}</div>
+          ${l.source?`<div class="hs-meta"><span>📚 ${esc(l.source)}</span></div>`:''}
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+    c.innerHTML=html;
+  }catch(e){
+    c.innerHTML='<div class="empty"><span class="icon">⚖️</span>加载失败，请稍后重试</div>';
+  }
+}
+
+// ============ 按日期分组渲染（热点/资讯/复盘 共用） ============
+async function renderByDate(containerId, field, localItems, itemHTML, opts){
+  const c=document.getElementById(containerId);
+  if(!c)return;
+  const today=todayStr();
+  let localByDate={};
+  if(localItems&&localItems.length){localByDate[today]=localItems;}
+  let html=`<div class="cloud-section"><div class="cloud-header">${opts.header} <span class="cloud-badge">按日期</span></div>`;
+  try{
+    const data=await fetchCloud('records');
+    const recs=(data&&Array.isArray(data.records))?data.records:[];
+    if(recs.length===0&&(!localItems||localItems.length===0)){
+      c.innerHTML=`<div class="empty"><span class="icon">${opts.icon}</span>${opts.empty}</div>`;return;
+    }
+    recs.forEach(rec=>{
+      if(rec.missing){
+        html+=`<div class="rec-day"><div class="rec-date">📅 ${esc(rec.date)} <span class="tag tag-info">缺失</span></div><div class="rec-missing">⚠️ 当日自动更新未产生归档，记录已随后续更新覆盖，无法精确还原。</div></div>`;
+        return;
+      }
+      let items=(rec[field]||[]).map(x=>({...x,_local:false}));
+      if(localByDate[rec.date]){localByDate[rec.date].forEach(x=>items.push({...x,_local:true}));delete localByDate[rec.date];}
+      if(items.length===0)return;
+      html+=`<div class="rec-day"><div class="rec-date">📅 ${esc(rec.date)}${rec.date===today?' <span class="tag tag-success">今天</span>':''}</div><div class="rec-items">${items.map(x=>itemHTML(x,opts)).filter(Boolean).join('')}</div></div>`;
+    });
+    Object.keys(localByDate).forEach(d=>{
+      if(!localByDate[d].length)return;
+      html+=`<div class="rec-day"><div class="rec-date">📅 ${esc(d)}${d===today?' <span class="tag tag-success">今天</span>':''} <span class="tag tag-info">本地</span></div><div class="rec-items">${localByDate[d].map(x=>itemHTML({...x,_local:true},opts)).filter(Boolean).join('')}</div></div>`;
+    });
+  }catch(e){
+    c.innerHTML=`<div class="empty"><span class="icon">${opts.icon}</span>加载失败，请稍后重试</div>`;return;
+  }
+  html+=`</div>`;
+  c.innerHTML=html;
+}
+function hsItemHTML(h){
+  const platMap={douyin:'🎵 抖音',xhs:'📕 小红书',wechat:'💬 公众号',other:'📌 其他'};
+  if(hsFilter!=='all'&&hsFilter!=='recreate'&&h.platform!==hsFilter)return '';
+  if(hsFilter==='recreate'&&!h.recreate)return '';
+  return `<div class="hs-card ${h._local?'':'cloud-card'}" style="margin-bottom:8px">
+    <div class="hs-top">
+      <span class="tag ${h._local?'tag-info':'tag-cloud'}">${platMap[h.platform]||h.platform||'其他'}</span>
+      ${h.recreate?'<span class="tag tag-success">⭐ 适合二创</span>':''}
+      <span class="hs-title">${esc(h.title)}</span>
+      ${h._local&&h.id?`<button class="task-del" onclick="delHotspot('${h.id}')">✕</button>`:''}
+    </div>
+    <div class="hs-meta">${h.heat?`<span>📊 ${esc(h.heat)}</span>`:''}${h._local&&h.ts?`<span>🕐 ${formatDate(h.ts)}</span>`:''}${h.url?`<a href="${esc(h.url)}" target="_blank" style="color:var(--info)">🔗 查看原文</a>`:''}</div>
+    ${h.note?`<div style="font-size:12px;color:var(--text-sec);margin-top:6px;padding:6px 8px;background:#EFF6FF;border-radius:6px">💡 ${esc(h.note)}</div>`:''}
+  </div>`;
+}
+function infoItemHTML(f,opts){
+  const search=(opts&&opts.search)||'';
+  if(search){
+    const s=search.toLowerCase();
+    const hit=(f.title||'').toLowerCase().includes(s)||(f.tags||[]).some(t=>t.toLowerCase().includes(s));
+    if(!hit)return '';
+  }
+  return `<div class="info-item ${f._local?'':'cloud-card'}" style="margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:500;margin-bottom:2px">${esc(f.title)}</div>
+        <div style="font-size:12px;color:var(--text-sec)">${f.source||f.platform?'📎 '+esc(f.source||f.platform):''}${f._local&&f.createdAt?' · 🕐 '+formatDate(f.createdAt):''}</div>
+        ${f.tags&&f.tags.length?`<div style="margin-top:4px">${f.tags.map(t=>`<span class="tag tag-cloud">${esc(t)}</span>`).join('')}</div>`:''}
+        ${f.notes||f.note?`<div style="font-size:12px;color:var(--text-sec);margin-top:4px;font-style:italic">💬 ${esc(f.notes||f.note)}</div>`:''}
+        ${f.url?`<div style="margin-top:4px"><a href="${esc(f.url)}" target="_blank" style="color:var(--info);font-size:12px">🔗 来源</a></div>`:''}
+      </div>
+      ${f._local&&f.id?`<div style="display:flex;gap:4px;flex-shrink:0"><button class="btn btn-ghost btn-sm" onclick="moveKanban('${f.id}','evaluate')">📋</button><button class="task-del" onclick="delInfo('${f.id}')">✕</button></div>`:''}
+    </div>
+  </div>`;
+}
+function reviewItemHTML(r){
+  if(r._local){
+    const pm={xhs:'📕 小红书',douyin:'🎵 抖音',wechat:'💬 公众号',other:'📌 其他'};
+    return `<div class="rv-card" style="margin-bottom:8px">
+      <div class="rv-head"><span class="rv-title">${esc(r.title)}</span>
+        <div><span class="tag tag-info">${pm[r.platform]||r.platform||''}</span><span class="tag">${dateLabel(r.date)}</span><button class="task-del" onclick="delReview('${r.id}')">✕</button></div>
+      </div>
+      <div class="rv-metrics">
+        <div class="rv-metric"><div class="num">${fmtNum(r.views)}</div><div class="lbl">阅读/播放</div></div>
+        <div class="rv-metric"><div class="num">${fmtNum(r.likes)}</div><div class="lbl">点赞</div></div>
+        <div class="rv-metric"><div class="num">${fmtNum(r.saves)}</div><div class="lbl">收藏</div></div>
+        <div class="rv-metric"><div class="num">${fmtNum(r.comments)}</div><div class="lbl">评论</div></div>
+      </div>
+      ${r.pros?`<div class="rv-section rv-pros"><span class="lbl">✅ 优点：</span>${esc(r.pros)}</div>`:''}
+      ${r.cons?`<div class="rv-section rv-cons"><span class="lbl">❌ 不足：</span>${esc(r.cons)}</div>`:''}
+      ${r.optimize?`<div class="rv-section rv-opt"><span class="lbl">🔄 优化：</span>${esc(r.optimize)}</div>`:''}
+    </div>`;
+  }
+  return `<div class="rv-card cloud-card" style="margin-bottom:8px">
+    <div class="rv-head"><span class="rv-title">📋 ${esc(r.title||'每日复盘')}</span><span class="tag tag-cloud">自动复盘</span></div>
+    ${r.summary?`<div style="font-size:13px;color:var(--text-sec);margin:8px 0;line-height:1.5;white-space:pre-wrap">${esc(r.summary)}</div>`:''}
+    ${r.tasks?`<div style="font-size:12px;margin-top:8px"><b>📌 已完成：</b>${esc(r.tasks)}</div>`:''}
+    ${r.next?`<div style="font-size:12px;color:var(--primary);margin-top:4px"><b>👉 下一步：</b>${esc(r.next)}</div>`:''}
+  </div>`;
+}
+
+// ============ DATA EXPORT/IMPORT ============
+function reloadAllData(){
+  infos=loadData(SK.infos);thoughts=loadData(SK.thoughts);plans=loadData(SK.plans);
+  inspirations=loadData(SK.inspirations);hotspots=loadData(SK.hotspots);reviews=loadData(SK.reviews);
+  memos=loadData(SK.memos);enProgress=loadObj(SK.enProgress,{level:1,completed:[],readDone:[]});
+}
+function p2(n){return String(n).padStart(2,'0')}
+function exportData(){
+  const snap={};Object.values(SK).forEach(k=>{snap[k]=localStorage.getItem(k)});
+  snap.__exportedAt=Date.now();snap.__device=navigator.userAgent.substring(0,50);
+  const blob=new Blob([JSON.stringify(snap,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  const d=new Date();const ts=d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'_'+p2(d.getHours())+p2(d.getMinutes());
+  a.href=url;a.download='aria_backup_'+ts+'.json';document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('✅ 数据已导出，请将文件传到另一台设备');
+}
+function importData(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const snap=JSON.parse(e.target.result);
+      Object.values(SK).forEach(k=>{if(snap[k]!==undefined)localStorage.setItem(k,snap[k]);});
+      reloadAllData();renderPage(currentPage);renderNav();
+      closeSyncModal();toast('✅ 数据导入成功，已更新所有模块');debouncedCloudSync();
+    }catch(err){toast('❌ 导入失败：文件格式不正确');}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+function openSyncModal(){
+  document.getElementById('sync-modal').classList.add('show');
+  const ver=document.getElementById('modal-version');
+  if(ver)ver.textContent='v'+APP_VERSION;
+  const banner=document.getElementById('version-banner');
+  if(banner&&APP_VERSION==='v2.5')banner.style.display='none';
+  // Show local data diagnostics
+  const dbg=document.getElementById('sync-debug');
+  if(dbg){
+    const plans=loadData(SK.plans);
+    const memos=loadData(SK.memos);
+    const infos=loadData(SK.infos);
+    dbg.innerHTML='版本: '+APP_VERSION+' | 同步通道: '+(_syncId||DEFAULT_SYNC_ID)+'<br>'+
+      '📊 本地数据：计划 '+plans.length+' 条 | 备忘 '+memos.length+' 条 | 资讯 '+infos.length+' 条';
+  }
+}
+function closeSyncModal(){document.getElementById('sync-modal').classList.remove('show')}
+function showInstallGuide(){document.getElementById('install-guide-modal').classList.add('show')}
+function closeInstallGuide(){document.getElementById('install-guide-modal').classList.remove('show')}
+async function manualSync(){
+  toast('🔄 同步中...');
+  try{
+    await cloudSave();
+    await new Promise(r=>setTimeout(r,500));
+    await forceCloudLoad();
+    toast('✅ 同步完成');
+  }catch(e){
+    console.error(e);
+    toast('❌ 同步失败：'+e.message);
+  }
+}
+
+let infos=loadData(SK.infos);
+let thoughts=loadData(SK.thoughts);
+let plans=loadData(SK.plans);
+let inspirations=loadData(SK.inspirations);
+let hotspots=loadData(SK.hotspots);
+let reviews=loadData(SK.reviews);
+let memos=loadData(SK.memos);
+let enProgress=loadObj(SK.enProgress,{level:1,completed:[],readDone:[]});
+let currentPage='plan';
+let hsFilter='all',inspFilter='all',audioCat='all',enTab='quiz';
+let memoColor='#FFF3E0';
+let quizState={idx:0,answered:false,score:0};
+
+// ============ NAV ============
+const NAV_GROUPS=[
+  {title:'效率工具',items:[
+    {id:'plan',icon:'📋',name:'每日计划'},
+    {id:'inspiration',icon:'💡',name:'选题灵感'},
+    {id:'hotspot',icon:'🔥',name:'爆款热点'},
+    {id:'review',icon:'📊',name:'内容复盘'},
+    {id:'memo',icon:'📝',name:'备忘录'},
+  ]},
+  {title:'运营工具',items:[
+    {id:'collect',icon:'📥',name:'资讯收集'},
+    {id:'kanban',icon:'📋',name:'选题看板'},
+    {id:'think',icon:'🧠',name:'思路梳理'},
+  ]},
+  {title:'知识扩展',items:[
+    {id:'law',icon:'⚖️',name:'法律条文'},
+  ]}
+];
+function renderNav(){
+  const c=document.getElementById('nav-container');
+  let h='';
+  NAV_GROUPS.forEach(g=>{
+    h+=`<div class="nav-group-title">${g.title}</div>`;
+    g.items.forEach(it=>{
+      h+=`<div class="nav-item ${currentPage===it.id?'active':''}" data-page="${it.id}" onclick="switchPage('${it.id}')">
+        <span class="icon">${it.icon}</span><span>${it.name}</span>
+        <span class="badge" id="badge-${it.id}" style="display:none"></span>
+      </div>`;
+    });
+  });
+  c.innerHTML=h;
+}
+function switchPage(id){
+  currentPage=id;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===id));
+  const titles={'plan':'每日计划','inspiration':'选题灵感','hotspot':'爆款热点','review':'内容复盘','memo':'备忘录','collect':'资讯收集','kanban':'选题看板','think':'思路梳理','law':'法律条文'};
+  document.getElementById('mobile-title').textContent=titles[id]||'小优工作台';
+  closeSidebar();
+  renderPage(id);
+}
+async function renderPage(id){
+  if(id==='plan')renderPlans();
+  if(id==='inspiration')renderInspirations();
+  if(id==='hotspot')await renderHotspots();
+  if(id==='review')await renderReviews();
+  if(id==='english'){renderEnStats();renderQuiz();renderRead()}
+  if(id==='audio')renderAudio();
+  if(id==='memo')renderMemos();
+  if(id==='collect'){await renderInfoList();renderKanban();}
+  if(id==='kanban')renderKanban();
+  if(id==='think')renderThoughtHistory();
+  if(id==='law')await renderLaw();
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show')}
+
+// ============ TOAST ============
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+// ============ DATE ============
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function formatDate(ts){const d=new Date(ts);const now=new Date();const diff=now-d;if(diff<60000)return'刚刚';if(diff<3600000)return Math.floor(diff/60000)+'分钟前';if(diff<86400000)return Math.floor(diff/3600000)+'小时前';return `${d.getMonth()+1}月${d.getDate()}日`}
+function dateLabel(dateStr){const t=todayStr();if(dateStr===t)return'今天';const d=new Date(dateStr);const y=d.getDay();const w=['周日','周一','周二','周三','周四','周五','周六'];return `${d.getMonth()+1}月${d.getDate()}日 ${w[y]}`}
+
+// ============ 1. DAILY PLAN ============
+function addPlan(){
+  const input=document.getElementById('plan-input');
+  const prio=document.getElementById('plan-prio').value;
+  const text=input.value.trim();
+  if(!text){toast('请输入任务内容');return}
+  plans.push({id:genId(),date:todayStr(),text,done:false,priority:prio});
+  saveData(SK.plans,plans);
+  input.value='';
+  renderPlans();
+  toast('已添加');
+}
+function togglePlan(id){
+  const p=plans.find(x=>x.id===id);if(!p)return;
+  p.done=!p.done;saveData(SK.plans,plans);renderPlans();
+}
+function delPlan(id){plans=plans.filter(x=>x.id!==id);saveData(SK.plans,plans);markDeleted(SK.plans,id);renderPlans();}
+function renderPlans(){
+  const today=todayStr();
+  const todayPlans=plans.filter(p=>p.date===today);
+  const done=todayPlans.filter(p=>p.done).length;
+  const total=todayPlans.length;
+  const overdue=plans.filter(p=>!p.done&&p.date!==today);
+  document.getElementById('plan-stats').innerHTML=`
+    <div class="stat-row">
+      <div class="stat-box"><div class="num">${done}/${total}</div><div class="lbl">今日完成</div></div>
+      <div class="stat-box"><div class="num" style="color:var(--success)">${total>0?Math.round(done/total*100):0}%</div><div class="lbl">完成率</div></div>
+      <div class="stat-box"><div class="num" style="color:var(--danger)">${overdue.length}</div><div class="lbl">逾期未完成</div></div>
+    </div>`;
+  const list=document.getElementById('plan-list');
+  let h='';
+  if(total===0&&overdue.length===0){list.innerHTML='<div class="empty"><span class="icon">📋</span>今天还没有任务，添加第一个吧</div>';return}
+  h+=`<div class="date-divider">📌 今天 · ${dateLabel(today)}</div>`;
+  if(todayPlans.length===0){h+='<div class="empty" style="padding:16px">今天还没有任务</div>'}
+  todayPlans.sort((a,b)=>(a.done===b.done?0:a.done?1:-1)).forEach(p=>{
+    h+=`<div class="task-item ${p.done?'done':''}">
+      <div class="task-checkbox ${p.done?'checked':''}" onclick="togglePlan('${p.id}')"></div>
+      <div class="task-priority prio-${p.priority}"></div>
+      <div class="task-text">${esc(p.text)}</div>
+      <button class="task-del" onclick="delPlan('${p.id}')">✕</button>
+    </div>`;
+  });
+  if(overdue.length>0){
+    const dates=[...new Set(overdue.map(p=>p.date))].sort().reverse();
+    dates.forEach(d=>{
+      h+=`<div class="date-divider">⏰ ${dateLabel(d)}（未完成）</div>`;
+      overdue.filter(p=>p.date===d).forEach(p=>{
+        h+=`<div class="task-item">
+          <div class="task-checkbox" onclick="togglePlan('${p.id}')"></div>
+          <div class="task-priority prio-${p.priority}"></div>
+          <div class="task-text">${esc(p.text)}</div>
+          <button class="task-del" onclick="delPlan('${p.id}')">✕</button>
+        </div>`;
+      });
+    });
+  }
+  list.innerHTML=h;
+}
+
+// ============ 2. INSPIRATION ============
+function addInspiration(){
+  const text=document.getElementById('insp-input').value.trim();
+  const tag=document.getElementById('insp-tag').value.trim();
+  if(!text){toast('请输入灵感内容');return}
+  inspirations.unshift({id:genId(),text,tag:tag||'通用',status:'idea',ts:Date.now()});
+  saveData(SK.inspirations,inspirations);
+  document.getElementById('insp-input').value='';document.getElementById('insp-tag').value='';
+  renderInspirations();toast('灵感已记录');
+}
+function setInspStatus(id,st){const i=inspirations.find(x=>x.id===id);if(!i)return;i.status=st;saveData(SK.inspirations,inspirations);renderInspirations();}
+function delInsp(id){inspirations=inspirations.filter(x=>x.id!==id);saveData(SK.inspirations,inspirations);markDeleted(SK.inspirations,id);renderInspirations();}
+function renderInspirations(){
+  const tags=['all',...new Set(inspirations.map(i=>i.tag))];
+  document.getElementById('insp-filter').innerHTML=tags.map(t=>`<div class="chip ${inspFilter===t?'active':''}" onclick="inspFilter='${t}';renderInspirations()">${t==='all'?'全部':esc(t)}</div>`).join('');
+  let list=inspFilter==='all'?inspirations:inspirations.filter(i=>i.tag===inspFilter);
+  const c=document.getElementById('insp-list');
+  if(list.length===0){c.innerHTML='<div class="empty"><span class="icon">💡</span>还没有灵感记录</div>';return}
+  c.innerHTML=list.map(i=>{
+    const stMap={idea:{l:'💡 灵感',c:''},developing:{l:'🔧 开发中',c:'developing'},used:{l:'✅ 已使用',c:'used'}};
+    const st=stMap[i.status];
+    return `<div class="insp-card ${st.c}">
+      <div class="insp-text">${esc(i.text)}</div>
+      <div class="insp-meta">
+        <span class="insp-tag">${esc(i.tag)}</span>
+        <span class="insp-tag">${formatDate(i.ts)}</span>
+        <select class="input" style="width:auto;padding:3px 6px;font-size:11px" onchange="setInspStatus('${i.id}',this.value)">
+          <option value="idea" ${i.status==='idea'?'selected':''}>💡 灵感</option>
+          <option value="developing" ${i.status==='developing'?'selected':''}>🔧 开发中</option>
+          <option value="used" ${i.status==='used'?'selected':''}>✅ 已使用</option>
+        </select>
+        <button class="task-del" onclick="delInsp('${i.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============ 3. HOTSPOT ============
+function addHotspot(){
+  const platform=document.getElementById('hs-platform').value;
+  const title=document.getElementById('hs-title').value.trim();
+  const heat=document.getElementById('hs-heat').value.trim();
+  const url=document.getElementById('hs-url').value.trim();
+  const recreate=document.getElementById('hs-recreate').checked;
+  const note=document.getElementById('hs-note').value.trim();
+  if(!title){toast('请输入热点标题');return}
+  hotspots.unshift({id:genId(),platform,title,heat,recreate,url,note,ts:Date.now()});
+  saveData(SK.hotspots,hotspots);
+  ['hs-title','hs-heat','hs-url','hs-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('hs-recreate').checked=false;
+  renderHotspots();toast('热点已添加');
+}
+function delHotspot(id){hotspots=hotspots.filter(x=>x.id!==id);saveData(SK.hotspots,hotspots);markDeleted(SK.hotspots,id);renderHotspots();}
+async function renderHotspots(){
+  document.querySelectorAll('#hs-filter .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===hsFilter));
+  await renderByDate('hs-list','hotspots',hotspots,hsItemHTML,{header:'🔥 宠物爆款热点 · 按日期分类',icon:'🔥',empty:'还没有热点记录<br><br>提示：我会在每天早 9 点自动帮你收集宠物热点'});
+}
+
+// ============ 4. REVIEW ============
+function addReview(){
+  const title=document.getElementById('rv-title').value.trim();
+  if(!title){toast('请输入内容标题');return}
+  reviews.unshift({
+    id:genId(),date:todayStr(),title,
+    platform:document.getElementById('rv-platform').value,
+    views:+document.getElementById('rv-views').value||0,
+    likes:+document.getElementById('rv-likes').value||0,
+    saves:+document.getElementById('rv-saves').value||0,
+    comments:+document.getElementById('rv-comments').value||0,
+    pros:document.getElementById('rv-pros').value.trim(),
+    cons:document.getElementById('rv-cons').value.trim(),
+    optimize:document.getElementById('rv-opt').value.trim(),
+    ts:Date.now()
+  });
+  saveData(SK.reviews,reviews);
+  ['rv-title','rv-views','rv-likes','rv-saves','rv-comments','rv-pros','rv-cons','rv-opt'].forEach(id=>document.getElementById(id).value='');
+  renderReviews();toast('复盘已保存');
+}
+function delReview(id){reviews=reviews.filter(x=>x.id!==id);saveData(SK.reviews,reviews);markDeleted(SK.reviews,id);renderReviews();}
+async function renderReviews(){
+  await renderByDate('rv-list','reviews',reviews,reviewItemHTML,{header:'📊 内容复盘 · 按日期分类',icon:'📊',empty:'还没有复盘记录<br><br>提示：我会在每天早 9 点自动帮你复盘'});
+}
+function fmtNum(n){if(n>=10000)return (n/10000).toFixed(1)+'w';return n}
+
+// ============ 5. ENGLISH ============
+const EN_QUIZZES=[
+  {level:1,name:'基础闯关',color:'#D1FAE5',questions:[
+    {q:'"efficiency" 的意思是？',o:['效率','效果','努力','足够'],a:0},
+    {q:'"automate" 的意思是？',o:['自动','手动','操作','完成'],a:0},
+    {q:'"generate" 的意思是？',o:['删除','生成','复制','移动'],a:1},
+    {q:'AI 语境下 "prompt" 指的是？',o:['提示词','快速','准时','推进'],a:0},
+    {q:'"workflow" 的意思是？',o:['工作流','网络流','流量','工人'],a:0},
+  ]},
+  {level:2,name:'进阶闯关',color:'#FEF3C7',questions:[
+    {q:'职场中 "leverage" 的意思是？',o:['杠杆','利用/借助','水平','离开'],a:1},
+    {q:'"streamline" 的意思是？',o:['溪流','精简流程','直线','主流'],a:1},
+    {q:'"scalable" 的意思是？',o:['可扩展的','-scalable','刻度的','有限的'],a:0},
+    {q:'"iterate" 的意思是？',o:['迭代','停止','开始','删除'],a:0},
+    {q:'"benchmark" 的意思是？',o:['长椅','基准/对标','工作台','标记'],a:1},
+  ]},
+  {level:3,name:'高阶闯关',color:'#DBEAFE',questions:[
+    {q:'"paradigm shift" 指的是？',o:['范式转变','平行移动','段落变化','参数设置'],a:0},
+    {q:'"synergy" 的意思是？',o:['能量','协同效应','合成的','同情'],a:1},
+    {q:'"disruptive" 的意思是？',o:['破坏性的/颠覆的','讨论的','分散的','发现的'],a:0},
+    {q:'"frictionless" 的意思是？',o:['有摩擦的','无摩擦的/顺畅的',' Fiction的','有限的'],a:1},
+    {q:'"democratize" 的意思是？',o:['民主化/普及化','反对','演示','毁灭'],a:0},
+  ]},
+];
+const EN_READS=[
+  {en:'AI is transforming the way we work.',cn:'AI正在改变我们的工作方式。'},
+  {en:'Let me walk you through the workflow.',cn:'让我带你走一遍这个工作流。'},
+  {en:'The key is to leverage technology to boost efficiency.',cn:'关键在于借助技术来提升效率。'},
+  {en:'This tool can help you streamline your daily tasks.',cn:'这个工具可以帮你精简日常任务。'},
+  {en:"Don't be afraid to iterate on your content.",cn:'不要害怕对内容进行迭代优化。'},
+  {en:'Data-driven decisions are always better.',cn:'数据驱动的决策总是更好的。'},
+  {en:'The benchmark shows significant improvement.',cn:'基准测试显示显著提升。'},
+  {en:'We need to find a scalable solution.',cn:'我们需要找到一个可扩展的方案。'},
+  {en:'AI is not here to replace you, but to empower you.',cn:'AI不是来替代你的，而是来赋能你的。'},
+  {en:'The best content comes from authentic experience.',cn:'最好的内容来自真实的体验。'},
+];
+function renderEnStats(){
+  const total=EN_QUIZZES.reduce((s,q)=>s+q.questions.length,0);
+  const done=enProgress.completed.length;
+  const readDone=enProgress.readDone.length;
+  document.getElementById('en-stats').innerHTML=`
+    <div class="stat-box"><div class="num">${done}/${total}</div><div class="lbl">闯关完成</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--success)">${readDone}/${EN_READS.length}</div><div class="lbl">跟读完成</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--warning)">${enProgress.level}</div><div class="lbl">当前等级</div></div>`;
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#en-tabs .chip')){
+    document.querySelectorAll('#en-tabs .chip').forEach(c=>c.classList.remove('active'));
+    e.target.closest('#en-tabs .chip').classList.add('active');
+    enTab=e.target.closest('#en-tabs .chip').dataset.tab;
+    document.getElementById('en-quiz-area').style.display=enTab==='quiz'?'block':'none';
+    document.getElementById('en-read-area').style.display=enTab==='read'?'block':'none';
+  }
+  if(e.target.closest('#audio-cats .chip')){
+    document.querySelectorAll('#audio-cats .chip').forEach(c=>c.classList.remove('active'));
+    e.target.closest('#audio-cats .chip').classList.add('active');
+    audioCat=e.target.closest('#audio-cats .chip').dataset.cat;
+    renderAudio();
+  }
+  if(e.target.closest('#hs-filter .chip')){
+    hsFilter=e.target.closest('#hs-filter .chip').dataset.f;
+    renderHotspots();
+  }
+});
+function renderQuiz(){
+  const quiz=EN_QUIZZES.find(q=>q.level===enProgress.level)||EN_QUIZZES[0];
+  const q=quiz.questions[quizState.idx];
+  if(!q){document.getElementById('en-quiz-area').innerHTML='<div class="quiz-box" style="text-align:center"><div style="font-size:40px;margin-bottom:12px">🎉</div><p>恭喜通关本级别！</p><p style="color:var(--text-sec);margin-top:8px">选择下一级继续挑战</p></div>'+EN_QUIZZES.map(qz=>`<button class="btn ${qz.level===enProgress.level?'btn-primary':'btn-outline'}" style="margin:4px" onclick="startLevel(${qz.level})">${qz.name}</button>`).join('');return}
+  const dots=quiz.questions.map((_,i)=>`<div class="quiz-dot ${i<quizState.idx?'done':''} ${i===quizState.idx?'current':''}"></div>`).join('');
+  document.getElementById('en-quiz-area').innerHTML=`
+    <div class="quiz-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span class="level-badge" style="background:${quiz.color}">Level ${quiz.level} · ${quiz.name}</span>
+        <span style="font-size:13px;color:var(--text-sec)">第 ${quizState.idx+1}/${quiz.questions.length} 题</span>
+      </div>
+      <div class="quiz-progress">${dots}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div id="quiz-opts">${q.o.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('')}</div>
+      <div id="quiz-result" style="margin-top:12px"></div>
+    </div>`;
+}
+function answerQuiz(i){
+  if(quizState.answered)return;
+  quizState.answered=true;
+  const quiz=EN_QUIZZES.find(q=>q.level===enProgress.level);
+  const q=quiz.questions[quizState.idx];
+  const opts=document.querySelectorAll('#quiz-opts .quiz-opt');
+  opts.forEach((o,idx)=>{
+    if(idx===q.a)o.classList.add('correct');
+    if(idx===i&&i!==q.a)o.classList.add('wrong');
+    o.style.pointerEvents='none';
+  });
+  const correct=i===q.a;
+  if(correct)quizState.score++;
+  const key=`L${quiz.level}Q${quizState.idx}`;
+  if(!enProgress.completed.includes(key))enProgress.completed.push(key);
+  saveData(SK.enProgress,enProgress);
+  document.getElementById('quiz-result').innerHTML=`<div style="text-align:center;margin-top:12px">
+    ${correct?'<p style="color:var(--success);font-size:16px;font-weight:600">✅ 正确！</p>':'<p style="color:var(--danger);font-size:16px;font-weight:600">❌ 答错了</p><p style="color:var(--text-sec)">正确答案：'+q.o[q.a]+'</p>'}
+    <button class="btn btn-primary" style="margin-top:10px" onclick="nextQuiz()">${quizState.idx<quiz.questions.length-1?'下一题 →':'查看结果'}</button>
+  </div>`;
+  renderEnStats();
+}
+function nextQuiz(){
+  const quiz=EN_QUIZZES.find(q=>q.level===enProgress.level);
+  if(quizState.idx<quiz.questions.length-1){quizState.idx++;quizState.answered=false;renderQuiz();}
+  else{
+    document.getElementById('en-quiz-area').innerHTML=`<div class="quiz-box" style="text-align:center">
+      <div style="font-size:40px;margin-bottom:8px">${quizState.score===quiz.questions.length?'🏆':'✅'}</div>
+      <p style="font-size:18px;font-weight:600">Level ${quiz.level} 完成！</p>
+      <p style="color:var(--text-sec);margin-top:4px">得分：${quizState.score}/${quiz.questions.length}</p>
+      <div style="margin-top:16px">
+        ${enProgress.level<EN_QUIZZES.length?`<button class="btn btn-primary" onclick="startLevel(${enProgress.level+1})">挑战 Level ${enProgress.level+1} →</button>`:''}
+        <button class="btn btn-outline" onclick="startLevel(${enProgress.level})">重新挑战</button>
+      </div>
+    </div>`;
+  }
+}
+function startLevel(lv){
+  enProgress.level=lv;saveData(SK.enProgress,enProgress);
+  quizState={idx:0,answered:false,score:0};
+  renderEnStats();renderQuiz();
+}
+function renderRead(){
+  const area=document.getElementById('en-read-area');
+  area.innerHTML=EN_READS.map((r,i)=>{
+    const done=enProgress.readDone.includes(i);
+    return `<div class="read-sentence">
+      <div class="en">${r.en}</div>
+      <div class="cn">${r.cn}</div>
+      <div class="read-controls">
+        <button class="btn btn-primary btn-sm" onclick="speakEn('${r.en.replace(/'/g,"\\'")}')">🔊 朗读</button>
+        <button class="btn ${done?'btn-success':'btn-outline'} btn-sm" onclick="toggleReadDone(${i})">${done?'✅ 已掌握':'标记掌握'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleReadDone(i){
+  const idx=enProgress.readDone.indexOf(i);
+  if(idx>-1)enProgress.readDone.splice(idx,1);
+  else enProgress.readDone.push(i);
+  saveData(SK.enProgress,enProgress);
+  renderRead();renderEnStats();
+}
+function speakEn(text,rate){
+  if(!('speechSynthesis'in window)){toast('浏览器不支持语音朗读');return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=rate||0.8;
+  speechSynthesis.speak(u);
+}
+
+// ============ 6. AUDIO BOOKS ============
+const AUDIO_BOOKS=[
+  {cat:'政治',title:'《乡土中国》- 差序格局',author:'费孝通',text:'我们的社会结构和西洋的格局是不同的。我们的格局不是一捆一捆扎清楚的柴，而是好像把一块石头丢在水面上所发生的一圈圈推出去的波纹。每个人都是他社会影响所推出去的圈子的中心。被圈子的波纹所推及的就发生联系。每个人在某一时间某一地点所动用的圈子是不一定相同的。'},
+  {cat:'政治',title:'《论中国》- 历史的眼光',author:'基辛格',text:'中国的悠久历史使其领导人具备一种独特的视角。在中国人看来，历史不是直线前进的，而是循环往复的。每一个朝代的兴衰都被视为天道轮回的一部分。这种历史观使中国在外交中表现出极大的耐心，他们愿意以百年为单位来思考问题，而不是像西方那样以四年或五年为周期。'},
+  {cat:'经济',title:'《国富论》- 论分工',author:'亚当·斯密',text:'劳动生产力的最大改进，以及运用劳动时所表现的绝大部分的技能、熟练和判断力，似乎都是分工的结果。有了分工，同样数量的劳动者就能完成比过去多得多的工作量。其原因有三：第一，劳动者的熟练程度提高；第二，免除了由一种工作转到另一种工作所损失的时间；第三，许多简化劳动的机械发明使一个人能够做多个人的工作。'},
+  {cat:'经济',title:'《经济学原理》- 机会成本',author:'曼昆',text:'机会成本是为了得到某种东西而放弃的其他东西。做出一项决策时，我们必须考虑那些没有作出的选择。比如你决定花一小时看电视，这一小时的机会成本就是你本可以用这一小时做的事情的价值——也许是学习、工作或者锻炼。理解机会成本，是经济学思维的核心。'},
+  {cat:'历史',title:'《人类简史》- 认知革命',author:'尤瓦尔·赫拉利',text:'大约七万年前，智人开始做出非常特别的事情。他们开始讲故事——关于不存在的事物的故事。这是认知革命的核心。智人能够谈论从未见过、从未碰过、从未听说过的事物，比如神灵、国家、金钱、人权。这种虚构的能力让智人能够进行大规模的灵活合作，这是其他物种无法做到的。'},
+  {cat:'历史',title:'《史记》- 太史公自序（节选）',author:'司马迁',text:'先人有言：自周公卒五百岁而有孔子。孔子卒后至于今五百岁，有能绍明世，正易传，继春秋，本诗书礼乐之际？意在斯乎！意在斯乎！小子何敢让焉。网罗天下放失旧闻，王迹所兴，原始察终，见盛观衰，论考之行事，略推三代，录秦汉，上记轩辕，下至于兹，著十二本纪。'},
+];
+let currentAudio=null;
+function renderAudio(){
+  let list=audioCat==='all'?AUDIO_BOOKS:AUDIO_BOOKS.filter(b=>b.cat===audioCat);
+  document.getElementById('audio-list').innerHTML=list.map((b,i)=>{
+    const realIdx=AUDIO_BOOKS.indexOf(b);
+    return `<div class="audio-player" id="ap-${realIdx}">
+      <div class="audio-title">${b.title}</div>
+      <div class="audio-cat">📖 ${b.author} · ${b.cat}</div>
+      <div class="audio-text">${b.text}</div>
+      <div class="audio-controls">
+        <button class="audio-btn" id="play-${realIdx}" onclick="playAudio(${realIdx})">▶</button>
+        <div class="speed-control">语速 <input type="range" min="0.5" max="2" step="0.1" value="0.9" id="speed-${realIdx}" oninput="updateSpeed(${realIdx},this.value)"> <span id="speedval-${realIdx}">0.9</span>x</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function playAudio(idx){
+  if(!('speechSynthesis'in window)){toast('浏览器不支持语音朗读');return}
+  if(currentAudio===idx){speechSynthesis.cancel();stopAudio();return}
+  speechSynthesis.cancel();
+  stopAudio();
+  const b=AUDIO_BOOKS[idx];
+  const u=new SpeechSynthesisUtterance(b.text);
+  u.lang='zh-CN';
+  const speed=document.getElementById('speed-'+idx).value;
+  u.rate=parseFloat(speed);
+  u.onend=()=>stopAudio();
+  u.onerror=()=>stopAudio();
+  currentAudio=idx;
+  document.getElementById('ap-'+idx).classList.add('playing');
+  document.getElementById('play-'+idx).textContent='⏸';
+  speechSynthesis.speak(u);
+}
+function stopAudio(){
+  if(currentAudio!==null){
+    const el=document.getElementById('ap-'+currentAudio);
+    if(el)el.classList.remove('playing');
+    const btn=document.getElementById('play-'+currentAudio);
+    if(btn)btn.textContent='▶';
+    currentAudio=null;
+  }
+}
+function updateSpeed(idx,val){document.getElementById('speedval-'+idx).textContent=val;if(currentAudio===idx){speechSynthesis.cancel();setTimeout(()=>playAudio(idx),100)}}
+
+// ============ 7. MEMO ============
+const MEMO_COLORS=['#FFF3E0','#E8F5E9','#E3F2FD','#FCE4EC','#F3E5F5','#FFFDE7'];
+function renderMemoColors(){
+  document.getElementById('memo-colors').innerHTML=MEMO_COLORS.map(c=>`<div style="width:24px;height:24px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${memoColor===c?'var(--primary)':'transparent'}" onclick="memoColor='${c}';renderMemoColors()"></div>`).join('');
+}
+function addMemo(){
+  const text=document.getElementById('memo-input').value.trim();
+  if(!text){toast('请输入内容');return}
+  memos.unshift({id:genId(),text,color:memoColor,ts:Date.now()});
+  saveData(SK.memos,memos);
+  document.getElementById('memo-input').value='';
+  renderMemos();toast('已记下');
+}
+function delMemo(id){memos=memos.filter(x=>x.id!==id);saveData(SK.memos,memos);markDeleted(SK.memos,id);renderMemos();}
+function renderMemos(){
+  const c=document.getElementById('memo-list');
+  if(memos.length===0){c.innerHTML='<div class="empty"><span class="icon">📝</span>还没有备忘录</div>';return}
+  c.innerHTML=memos.map(m=>`<div class="memo-note" style="background:${m.color}">
+    <button class="memo-del" onclick="delMemo('${m.id}')">✕</button>
+    ${esc(m.text)}
+    <div class="memo-date">${formatDate(m.ts)}</div>
+  </div>`).join('');
+}
+
+// ============ 8. INFO COLLECT (original) ============
+function addInfo(){
+  const title=document.getElementById('info-title').value.trim();
+  if(!title){toast('请输入标题');return}
+  const tags=document.getElementById('info-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  infos.push({id:genId(),title,source:document.getElementById('info-source').value.trim(),url:document.getElementById('info-url').value.trim(),tags,notes:document.getElementById('info-notes').value.trim(),status:'pool',priority:'medium',createdAt:Date.now()});
+  saveData(SK.infos,infos);
+  ['info-title','info-source','info-url','info-tags','info-notes'].forEach(id=>document.getElementById(id).value='');
+  renderInfoList();renderKanban();toast('已收录到资讯池');
+}
+function delInfo(id){infos=infos.filter(x=>x.id!==id);saveData(SK.infos,infos);markDeleted(SK.infos,id);renderInfoList();renderKanban();}
+async function renderInfoList(){
+  if(currentPage!=='collect')return;
+  const search=document.getElementById('info-search').value.toLowerCase();
+  await renderByDate('info-list','feeds',infos,infoItemHTML,{header:'🐾 宠物资讯 · 按日期分类',icon:'📥',empty:'还没有资讯记录<br><br>提示：我会在每天早 9 点自动收集宠物资讯',search});
+}
+
+// ============ 9. KANBAN (original) ============
+const KANBAN_STATUSES=['pool','evaluate','candidate','progress','done'];
+const KANBAN_LABELS={pool:'资讯池',evaluate:'待评估',candidate:'选题候选',progress:'进行中',done:'已发布'};
+const KANBAN_NEXT={pool:'evaluate',evaluate:'candidate',candidate:'progress',progress:'done',done:null};
+const KANBAN_PREV={pool:null,evaluate:'pool',candidate:'evaluate',progress:'candidate',done:'progress'};
+function renderKanban(){
+  if(currentPage!=='kanban')return;
+  const board=document.getElementById('kanban-board');
+  board.innerHTML=KANBAN_STATUSES.map(s=>{
+    const items=infos.filter(i=>i.status===s);
+    return `<div class="kanban-column" data-status="${s}">
+      <div class="kanban-col-head"><span>${KANBAN_LABELS[s]}</span><span class="count">${items.length}</span></div>
+      <div id="col-${s}">${items.length===0?'<div style="text-align:center;padding:16px;font-size:12px;color:var(--text-sec)">暂无</div>':items.map(info=>{
+        const tagHTML=(info.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('');
+        let act='';
+        if(KANBAN_PREV[info.status])act+=`<button class="btn btn-ghost btn-sm" onclick="moveKanban('${info.id}','${KANBAN_PREV[info.status]}')">←</button>`;
+        if(KANBAN_NEXT[info.status])act+=`<button class="btn btn-ghost btn-sm btn-success" onclick="moveKanban('${info.id}','${KANBAN_NEXT[info.status]}')">→</button>`;
+        act+=`<select onchange="setPriority('${info.id}',this.value)" style="width:auto;padding:2px 4px;font-size:10px"><option value="high" ${info.priority==='high'?'selected':''}>🔴</option><option value="medium" ${info.priority==='medium'?'selected':''}>🟡</option><option value="low" ${info.priority==='low'?'selected':''}>🟢</option></select>`;
+        return `<div class="kanban-card priority-${info.priority}" draggable="true" data-id="${info.id}">
+          <button class="kanban-card-edit-btn" onclick="editKanbanCard('${info.id}')">✏️</button>
+          <div class="kanban-card-title">${esc(info.title)}</div>
+          <div class="kanban-card-meta">${info.source?'📎 '+esc(info.source)+' ':''}🕐${formatDate(info.createdAt)}</div>
+          ${tagHTML?`<div style="margin-top:3px">${tagHTML}</div>`:''}
+          ${info.notes?`<div style="font-size:10px;color:var(--text-sec);margin-top:3px;font-style:italic">💬 ${esc(info.notes)}</div>`:''}
+          <div class="kanban-card-actions">${act}</div>
+        </div>`;
+      }).join('')}</div>
+      <button class="kanban-add-btn" onclick="addKanbanCard('${s}')">＋ 新建选题</button>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.kanban-card').forEach(card=>{
+    card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',card.dataset.id);card.style.opacity='.5'});
+    card.addEventListener('dragend',e=>{card.style.opacity='1'});
+  });
+  document.querySelectorAll('.kanban-column').forEach(col=>{
+    col.addEventListener('dragover',e=>{e.preventDefault();col.style.background='#E2E8F0'});
+    col.addEventListener('dragleave',e=>{col.style.background=''});
+    col.addEventListener('drop',e=>{e.preventDefault();col.style.background='';moveKanban(e.dataTransfer.getData('text/plain'),col.dataset.status)});
+  });
+}
+function moveKanban(id,s){const i=infos.find(x=>x.id===id);if(!i)return;i.status=s;if(s==='done')i.doneAt=Date.now();saveData(SK.infos,infos);renderKanban();renderInfoList();}
+function setPriority(id,p){const i=infos.find(x=>x.id===id);if(!i)return;i.priority=p;saveData(SK.infos,infos);renderKanban();}
+function editKanbanCard(id){
+  const i=infos.find(x=>x.id===id);if(!i)return;
+  document.getElementById('kanban-edit-id').value=i.id;
+  document.getElementById('kanban-edit-name').value=i.title||'';
+  document.getElementById('kanban-edit-source').value=i.source||'';
+  document.getElementById('kanban-edit-url').value=i.url||'';
+  document.getElementById('kanban-edit-tags').value=(i.tags||[]).join(', ');
+  document.getElementById('kanban-edit-notes').value=i.notes||'';
+  document.getElementById('kanban-edit-priority').value=i.priority||'medium';
+  document.getElementById('kanban-edit-status').value=i.status||'pool';
+  document.getElementById('kanban-edit-title').textContent='✏️ 编辑选题';
+  document.getElementById('kanban-edit-del').style.display='';
+  document.getElementById('kanban-edit-modal').classList.add('show');
+}
+function addKanbanCard(status){
+  document.getElementById('kanban-edit-id').value='';
+  document.getElementById('kanban-edit-name').value='';
+  document.getElementById('kanban-edit-source').value='';
+  document.getElementById('kanban-edit-url').value='';
+  document.getElementById('kanban-edit-tags').value='';
+  document.getElementById('kanban-edit-notes').value='';
+  document.getElementById('kanban-edit-priority').value='medium';
+  document.getElementById('kanban-edit-status').value=status||'pool';
+  document.getElementById('kanban-edit-title').textContent='🆕 新建选题';
+  document.getElementById('kanban-edit-del').style.display='none';
+  document.getElementById('kanban-edit-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('kanban-edit-name').focus(),100);
+}
+function saveKanbanEdit(){
+  const id=document.getElementById('kanban-edit-id').value;
+  const name=document.getElementById('kanban-edit-name').value.trim();
+  if(!name){toast('请输入标题');return}
+  const source=document.getElementById('kanban-edit-source').value.trim();
+  const url=document.getElementById('kanban-edit-url').value.trim();
+  const tags=document.getElementById('kanban-edit-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const notes=document.getElementById('kanban-edit-notes').value.trim();
+  const priority=document.getElementById('kanban-edit-priority').value;
+  const status=document.getElementById('kanban-edit-status').value;
+  if(id){
+    const i=infos.find(x=>x.id===id);
+    if(i){i.title=name;i.source=source;i.url=url;i.tags=tags;i.notes=notes;i.priority=priority;i.status=status;if(status==='done')i.doneAt=Date.now();}
+    toast('✅ 已保存修改');
+  }else{
+    infos.push({id:genId(),title:name,source,url,tags,notes,status,priority,createdAt:Date.now()});
+    toast('✅ 已新建选题');
+  }
+  saveData(SK.infos,infos);
+  closeKanbanEdit();
+  renderKanban();renderInfoList();
+}
+function delKanbanCard(id){
+  if(!confirm('确定删除这个选题吗？'))return;
+  infos=infos.filter(x=>x.id!==id);
+  saveData(SK.infos,infos);markDeleted(SK.infos,id);
+  closeKanbanEdit();
+  renderKanban();renderInfoList();
+  toast('已删除');
+}
+function closeKanbanEdit(){document.getElementById('kanban-edit-modal').classList.remove('show')}
+
+// ============ 10. THOUGHT (original) ============
+const PROMPTS={
+  target:{title:'🎯 目标受众',text:'## 目标受众\n\n这条内容的目标受众是谁？\n- 他们关心什么？\n- 痛点是什么？\n- 什么能打动他们？\n\n---\n'},
+  angle:{title:'🔦 独特角度',text:'## 切入角度\n\n我可以用什么独特的角度来写这个话题？\n- 别人通常怎么写？\n- 我有什么不同的观察？\n\n---\n'},
+  value:{title:'💎 价值主张',text:'## 读者价值\n\n读者看完能得到什么？\n- 认知升级？\n- 实操指南？\n- 情绪共鸣？\n\n---\n'},
+  structure:{title:'🏗️ 内容结构',text:'## 内容结构\n\n结构怎么搭？\nA: 问题-分析-方案\nB: 故事-洞察-建议\nC: 清单体\nD: 对比评测\n\n---\n'},
+  gap:{title:'🕳️ 市场空白',text:'## 市场空白\n\n这个话题有什么空白？\n- 竞品没覆盖的点\n- 被忽略的场景\n\n---\n'},
+  free:{title:'✍️ 自由书写',text:'## 自由书写\n\n不用编辑，不用评判，先让思绪流淌。\n\n---\n'},
+};
+function renderPromptGrid(){
+  document.getElementById('prompt-grid').innerHTML=Object.entries(PROMPTS).map(([k,v])=>`<div class="prompt-btn" onclick="usePrompt('${k}')">${v.title}</div>`).join('');
+}
+function usePrompt(k){
+  const p=PROMPTS[k];const pad=document.getElementById('thought-pad');
+  pad.value+=p.text;pad.focus();
+}
+function saveThought(){
+  const c=document.getElementById('thought-pad').value.trim();
+  if(!c){toast('内容为空');return}
+  thoughts.unshift({id:genId(),content:c,createdAt:Date.now()});
+  saveData(SK.thoughts,thoughts);
+  document.getElementById('thought-pad').value='';
+  renderThoughtHistory();toast('记录已保存');
+}
+function delThought(id){thoughts=thoughts.filter(x=>x.id!==id);saveData(SK.thoughts,thoughts);markDeleted(SK.thoughts,id);renderThoughtHistory();}
+function loadThought(id){const t=thoughts.find(x=>x.id===id);if(t)document.getElementById('thought-pad').value=t.content;}
+function renderThoughtHistory(){
+  const c=document.getElementById('thought-history');
+  if(thoughts.length===0){c.innerHTML='';return}
+  c.innerHTML='<div class="page-header"><h2 style="font-size:16px">📜 历史记录</h2></div>'+thoughts.map(t=>`<div class="card" style="padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <span style="font-size:12px;color:var(--text-sec)">🕐 ${formatDate(t.createdAt)}</span>
+      <div><button class="btn btn-ghost btn-sm" onclick="loadThought('${t.id}')">加载</button><button class="task-del" onclick="delThought('${t.id}')">✕</button></div>
+    </div>
+    <div style="font-size:13px;margin-top:6px;max-height:80px;overflow:hidden;color:var(--text-sec)">${esc(t.content.substring(0,200))}...</div>
+  </div>`).join('');
+}
+
+// ============ UTILS ============
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ============ INIT ============
+renderNav();
+renderMemoColors();
+renderPromptGrid();
+switchPage('plan');
+// Show version
+const _vEl=document.getElementById('app-version');if(_vEl)_vEl.textContent=APP_VERSION;
+console.log('%c[小优 '+APP_VERSION+']','background:#FF8C5A;color:#fff;padding:2px 6px;border-radius:3px','loaded');
+
+// Resolve live sync id from deployed cloud_sync.json (self-heals across blob expiry)
+async function resolveSyncId(){
+  try{
+    const r=await fetch('./cloud_sync.json?_='+Date.now());
+    if(r.ok){const j=await r.json();if(j&&j.id){_setSyncId(j.id);console.log('[Aria] sync id from cloud_sync.json: '+j.id);return;}}
+  }catch(e){}
+  console.log('[Aria] sync id fallback: '+_syncId);
+}
+
+// Cloud sync: load once on start, then only on visibility change (no aggressive polling)
+resolveSyncId().then(()=>{cloudLoad(true);});
+setInterval(cloudSave,3600000);      // Keep-alive: auto-save every 1h (refreshes blob expiry)
+// Convergence: every 5 min re-read the canonical sync id from cloud_sync.json; if it changed
+// (e.g. blob was rebuilt by the daily automation), reconcile by pulling the canonical blob.
+// Prevents two devices from diverging onto different blobs after a rebuild. Only re-pulls on change.
+let _convPrev=_syncId;
+async function _syncConverge(){
+  const before=_syncId;
+  await resolveSyncId();
+  if(_syncId!==before){console.log('[Aria] sync id changed -> '+_syncId+', reconciling');_convPrev=_syncId;await cloudLoad(true);}
+}
+setInterval(_syncConverge,300000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)cloudLoad()});
+</script>
+</body>
+</html>

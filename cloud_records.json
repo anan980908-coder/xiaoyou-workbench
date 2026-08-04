@@ -1,0 +1,102 @@
+{
+  "_updated": "2026-08-04",
+  "gaps": [],
+  "records": [
+    {
+      "date": "2026-08-04",
+      "missing": false,
+      "hotspots": [
+        {
+          "id": "p_hs1",
+          "platform": "douyin",
+          "title": "新手养猫必看：猫砂盆摆放的3个坑，90%的人都放错了",
+          "heat": "抖音宠物榜Top5，单条播放破800w，评论区疯狂求教程",
+          "recreate": true,
+          "url": "https://www.douyin.com/",
+          "note": "⭐高互动选题！可做：①猫砂盆避坑清单 ②不同猫砂测评 ③新手养猫30天vlog",
+          "ts": 1754270000000
+        },
+        {
+          "id": "p_hs2",
+          "platform": "xhs",
+          "title": "养狗人的真实一天vlog：被治愈也被拆家",
+          "heat": "小红书宠物话题日增笔记2w+，收藏率超高",
+          "recreate": true,
+          "url": "https://www.xiaohongshu.com/",
+          "note": "⭐适合做情绪向内容：①养狗前后对比 ②狗狗搞笑日常合集"
+        },
+        {
+          "id": "p_hs3",
+          "platform": "wechat",
+          "title": "为什么越来越多年轻人选择养宠代替恋爱？一篇长文讲透",
+          "heat": "公众号10w+，朋友圈转发破3w",
+          "recreate": true,
+          "url": "https://mp.weixin.qq.com/",
+          "note": "⭐深度观点向，可做解读/采访类二创"
+        },
+        {
+          "id": "p_hs4",
+          "platform": "douyin",
+          "title": "宠物智能用品测评：自动喂食器到底值不值得买",
+          "heat": "种草类高热，评论区疯狂求链接",
+          "recreate": false,
+          "url": "https://www.douyin.com/",
+          "note": "带货向，注意合规标注与实测客观"
+        },
+        {
+          "id": "p_hs5",
+          "platform": "xhs",
+          "title": "流浪猫救助指南：遇到受伤小猫该怎么处理",
+          "heat": "公益向，收藏+转发双高",
+          "recreate": true,
+          "url": "https://www.xiaohongshu.com/",
+          "note": "⭐正向价值选题，可做科普/救助实录"
+        }
+      ],
+      "feeds": [
+        {
+          "id": "p_fd1",
+          "source": "宠物行业观察",
+          "title": "2026宠物经济规模预计突破8000亿，智能养宠成新风口",
+          "tags": ["宠物经济", "智能硬件"],
+          "notes": "自动猫砂盆、宠物摄像头销量同比增长显著，资本持续加注",
+          "url": "https://www.example.com/news1",
+          "ts": 1754270000000
+        },
+        {
+          "id": "p_fd2",
+          "source": "新华社",
+          "title": "多地出台文明养犬新规：遛狗不牵绳最高可罚",
+          "tags": ["养犬管理", "政策"],
+          "notes": "文明养犬立法趋严，多地升级电子犬证管理",
+          "url": "https://www.example.com/news2"
+        },
+        {
+          "id": "p_fd3",
+          "source": "界面新闻",
+          "title": "宠物保险赛道升温，年轻养宠人成投保主力",
+          "tags": ["宠物保险", "消费"],
+          "notes": "医疗险渗透率提升，月均保费百元级",
+          "url": "https://www.example.com/news3"
+        },
+        {
+          "id": "p_fd4",
+          "source": "36氪",
+          "title": "AI宠物陪伴机器人获新一轮融资，主打情绪价值",
+          "tags": ["AI", "宠物科技", "融资"],
+          "notes": "情绪陪伴方向受资本关注，主打拟人化交互",
+          "url": "https://www.example.com/news4"
+        },
+        {
+          "id": "p_fd5",
+          "source": "央视财经",
+          "title": "夏季宠物避暑指南：这些降温误区要避开",
+          "tags": ["养宠科普", "夏季"],
+          "notes": "中暑防范、空调温度、饮水管理是重点",
+          "url": "https://www.example.com/news5"
+        }
+      ],
+      "reviews": []
+    }
+  ]
+}
