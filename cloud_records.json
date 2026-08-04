@@ -9,91 +9,114 @@
         {
           "id": "p_hs1",
           "platform": "douyin",
-          "title": "新手养猫必看：猫砂盆摆放的3个坑，90%的人都放错了",
-          "heat": "抖音宠物榜Top5，单条播放破800w，评论区疯狂求教程",
+          "title": "新手养猫必看：这5样东西千万别买",
+          "heat": "12.3w点赞",
           "recreate": true,
           "url": "https://www.douyin.com/",
-          "note": "⭐高互动选题！可做：①猫砂盆避坑清单 ②不同猫砂测评 ③新手养猫30天vlog",
-          "ts": 1754270000000
+          "note": "⭐可做避坑合集，盘点养猫智商税用品",
+          "ts": 1785824443298
         },
         {
           "id": "p_hs2",
           "platform": "xhs",
-          "title": "养狗人的真实一天vlog：被治愈也被拆家",
-          "heat": "小红书宠物话题日增笔记2w+，收藏率超高",
+          "title": "我家狗子的一天vlog｜治愈系日常记录",
+          "heat": "8.6w收藏",
           "recreate": true,
           "url": "https://www.xiaohongshu.com/",
-          "note": "⭐适合做情绪向内容：①养狗前后对比 ②狗狗搞笑日常合集"
+          "note": "⭐可模仿记录式vlog，配轻音乐+字幕",
+          "ts": 1785824443298
         },
         {
           "id": "p_hs3",
           "platform": "wechat",
-          "title": "为什么越来越多年轻人选择养宠代替恋爱？一篇长文讲透",
-          "heat": "公众号10w+，朋友圈转发破3w",
-          "recreate": true,
+          "title": "流浪猫科学投喂指南：喂错反而害了它",
+          "heat": "3.2w阅读",
+          "recreate": false,
           "url": "https://mp.weixin.qq.com/",
-          "note": "⭐深度观点向，可做解读/采访类二创"
+          "note": "科普向，适合转发",
+          "ts": 1785824443298
         },
         {
           "id": "p_hs4",
           "platform": "douyin",
-          "title": "宠物智能用品测评：自动喂食器到底值不值得买",
-          "heat": "种草类高热，评论区疯狂求链接",
-          "recreate": false,
+          "title": "百元猫砂盆实测：这3款真的不结团",
+          "heat": "9.1w点赞",
+          "recreate": true,
           "url": "https://www.douyin.com/",
-          "note": "带货向，注意合规标注与实测客观"
+          "note": "⭐横向测评，对比3款优缺点",
+          "ts": 1785824443298
         },
         {
           "id": "p_hs5",
           "platform": "xhs",
-          "title": "流浪猫救助指南：遇到受伤小猫该怎么处理",
-          "heat": "公益向，收藏+转发双高",
-          "recreate": true,
+          "title": "养宠后才懂的10件小事，第7个太真实",
+          "heat": "5.5w收藏",
+          "recreate": false,
           "url": "https://www.xiaohongshu.com/",
-          "note": "⭐正向价值选题，可做科普/救助实录"
+          "note": "情感向，易引发共鸣",
+          "ts": 1785824443298
         }
       ],
       "feeds": [
         {
           "id": "p_fd1",
-          "source": "宠物行业观察",
-          "title": "2026宠物经济规模预计突破8000亿，智能养宠成新风口",
-          "tags": ["宠物经济", "智能硬件"],
-          "notes": "自动猫砂盆、宠物摄像头销量同比增长显著，资本持续加注",
-          "url": "https://www.example.com/news1",
-          "ts": 1754270000000
+          "source": "宠物经济观察",
+          "title": "2026宠物消费报告：智能用品增长翻倍",
+          "tags": [
+            "宠物经济",
+            "消费"
+          ],
+          "notes": "智能猫砂盆、自动喂食器成新刚需",
+          "url": "https://www.example.com/",
+          "ts": 1785824443298
         },
         {
           "id": "p_fd2",
-          "source": "新华社",
-          "title": "多地出台文明养犬新规：遛狗不牵绳最高可罚",
-          "tags": ["养犬管理", "政策"],
-          "notes": "文明养犬立法趋严，多地升级电子犬证管理",
-          "url": "https://www.example.com/news2"
+          "source": "城市养犬管理",
+          "title": "多地推行文明养犬电子标识，扫码知免疫",
+          "tags": [
+            "养犬",
+            "政策"
+          ],
+          "notes": "电子犬牌逐步替代传统狗证",
+          "url": "https://www.example.com/",
+          "ts": 1785824443298
         },
         {
           "id": "p_fd3",
-          "source": "界面新闻",
-          "title": "宠物保险赛道升温，年轻养宠人成投保主力",
-          "tags": ["宠物保险", "消费"],
-          "notes": "医疗险渗透率提升，月均保费百元级",
-          "url": "https://www.example.com/news3"
+          "source": "动物福利周刊",
+          "title": "流浪动物TNR科普走进社区，领养代替购买",
+          "tags": [
+            "流浪动物",
+            "科普"
+          ],
+          "notes": "Trap-Neuter-Return 模式推广",
+          "url": "https://www.example.com/",
+          "ts": 1785824443298
         },
         {
           "id": "p_fd4",
-          "source": "36氪",
-          "title": "AI宠物陪伴机器人获新一轮融资，主打情绪价值",
-          "tags": ["AI", "宠物科技", "融资"],
-          "notes": "情绪陪伴方向受资本关注，主打拟人化交互",
-          "url": "https://www.example.com/news4"
+          "source": "宠物科技前线",
+          "title": "AI宠物翻译器上新，能识别猫咪情绪",
+          "tags": [
+            "宠物科技",
+            "AI"
+          ],
+          "notes": "基于叫声与姿态的情绪识别",
+          "url": "https://www.example.com/",
+          "ts": 1785824443298
         },
         {
           "id": "p_fd5",
-          "source": "央视财经",
-          "title": "夏季宠物避暑指南：这些降温误区要避开",
-          "tags": ["养宠科普", "夏季"],
-          "notes": "中暑防范、空调温度、饮水管理是重点",
-          "url": "https://www.example.com/news5"
+          "source": "养宠科普",
+          "title": "夏季养宠防中暑指南：这些信号要警惕",
+          "tags": [
+            "科普",
+            "健康"
+          ],
+          "notes": "短鼻犬、长毛猫高危",
+          "url": "https://www.example.com/",
+          "ts": 1785824443298
         }
       ],
       "reviews": []

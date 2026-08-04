@@ -1,12 +1,12 @@
 {
-  "name": "Aria 工作台",
-  "short_name": "Aria",
-  "description": "安安的效率面板 - 计划、灵感、热点、复盘、英语、听书、备忘",
+  "name": "小优工作台",
+  "short_name": "小优",
+  "description": "小优的效率面板 - 计划、灵感、宠物热点、宠物资讯、内容复盘、备忘",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F1F5F9",
-  "theme_color": "#FF6B8A",
+  "background_color": "#FFF4EF",
+  "theme_color": "#FF8C5A",
   "lang": "zh-CN",
   "icons": [
     {

@@ -1,23 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FF85A2"/>
+      <stop offset="0%" stop-color="#FF8C5A"/>
       <stop offset="100%" stop-color="#FF6B8A"/>
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <!-- Heart -->
-  <g transform="translate(256,230)">
-    <path d="M0,80 C-30,30 -120,-20 -140,40 C-160,100 -80,160 0,200 C80,160 160,100 140,40 C120,-20 30,30 0,80Z"
-          fill="#fff" opacity="0.95"/>
-  </g>
-  <!-- Sparkles -->
-  <g fill="#fff" opacity="0.5">
-    <circle cx="100" cy="110" r="12"/>
-    <circle cx="415" cy="90" r="10"/>
-    <circle cx="120" cy="400" r="11"/>
-    <circle cx="405" cy="380" r="13"/>
-    <circle cx="70" cy="260" r="7"/>
-    <circle cx="445" cy="250" r="8"/>
+  <g fill="#FFFFFF">
+    <!-- 四个脚趾 -->
+    <ellipse cx="158" cy="190" rx="50" ry="58"/>
+    <ellipse cx="224" cy="150" rx="56" ry="64"/>
+    <ellipse cx="288" cy="150" rx="56" ry="64"/>
+    <ellipse cx="354" cy="190" rx="50" ry="58"/>
+    <!-- 掌垫 -->
+    <ellipse cx="256" cy="360" rx="82" ry="64"/>
   </g>
 </svg>
